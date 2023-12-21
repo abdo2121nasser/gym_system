@@ -19,7 +19,7 @@ class CalenderBlock extends StatelessWidget {
         return TableCalendar(
          currentDay: bCubit.selectedDay,
           onDaySelected: (selectedDay, focusedDay) {
-            bCubit.changeSelectedDay(selectedDay);
+            bCubit.changeSelectedDay(selectedDay,);
           },
           selectedDayPredicate: (day) {
             // Use this to determine if a day is selected

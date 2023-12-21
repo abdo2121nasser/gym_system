@@ -39,3 +39,18 @@ class CancelBookedClassLoadingState extends BookingState {}
 class CancelBookedClassSuccessState extends BookingState {}
 class CancelBookedClassErrorState extends BookingState {}
 
+class IncrementCustomerNumberLoadingState extends BookingState {}
+class IncrementCustomerNumberSuccessState extends BookingState {}
+class IncrementCustomerNumberErrorState extends BookingState {}
+
+class DecrementCustomerNumberLoadingState extends BookingState {}
+class DecrementCustomerNumberSuccessState extends BookingState {}
+class DecrementCustomerNumberErrorState extends BookingState {}
+
+class ReturnAllCreditsLoadingState extends BookingState {}
+class ReturnAllCreditsSuccessState extends BookingState {}
+class ReturnAllCreditsErrorState extends BookingState {}
+
+class GetRecentBookedClassesLoadingState extends BookingState {}
+class GetRecentBookedClassesSuccessState extends BookingState {}
+class GetRecentBookedClassesErrorState extends BookingState {}

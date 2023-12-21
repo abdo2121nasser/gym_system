@@ -4,6 +4,10 @@ part of 'profile_cubit.dart';
 abstract class ProfileState {}
 class ProfileInitial extends ProfileState {}
 class SetControllersState extends ProfileState {}
+class CreditDateValidationState extends ProfileState {}
+
+class SetStartCreditState extends ProfileState {}
+class SetEndCreditState extends ProfileState {}
 
 class PickImageLoadingState extends ProfileState {}
 class PickImageSuccessState extends ProfileState {}
@@ -29,3 +33,18 @@ class UpdateEmailLoadingState extends ProfileState {}
 class UpdateEmailSuccessState extends ProfileState {}
 class UpdateEmailErrorState extends ProfileState {}
 
+class GetCreditUserDataLoadingState extends ProfileState {}
+class GetCreditUserDataSuccessState extends ProfileState {}
+class GetCreditUserDataErrorState extends ProfileState {}
+
+class UpdateCreditLoadingState extends ProfileState {}
+class UpdateCreditSuccessState extends ProfileState {}
+class UpdateCreditErrorState extends ProfileState {}
+
+class IncrementCreditLoadingState extends ProfileState {}
+class IncrementCreditSuccessState extends ProfileState {}
+class IncrementCreditErrorState extends ProfileState {}
+
+class DecrementCreditLoadingState extends ProfileState {}
+class DecrementCreditSuccessState extends ProfileState {}
+class DecrementCreditErrorState extends ProfileState {}

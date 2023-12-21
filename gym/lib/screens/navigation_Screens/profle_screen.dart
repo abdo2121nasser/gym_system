@@ -15,7 +15,9 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ProfileCubit, ProfileState>(
+    return BlocProvider.value(
+      value: ProfileCubit.get(context)..reciveAllUserData(),
+  child: BlocConsumer<ProfileCubit, ProfileState>(
   listener: (context, state) {
   },
   builder: (context, state) {
@@ -122,6 +124,7 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   },
+),
 );
   }
 }

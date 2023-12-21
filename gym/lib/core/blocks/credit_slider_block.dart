@@ -4,7 +4,10 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 
 
 class CreditIndicatorBlock extends StatelessWidget {
-  const CreditIndicatorBlock({super.key});
+ final double percent;
+
+
+ CreditIndicatorBlock({required this.percent});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +15,7 @@ class CreditIndicatorBlock extends StatelessWidget {
 padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 0),
     barRadius: const Radius.circular(5),
       lineHeight: 14.0,
-      percent: 0.5,
+      percent: percent,
       backgroundColor: Colors.teal.shade400,
       progressColor: Colors.yellow.shade400,
     );

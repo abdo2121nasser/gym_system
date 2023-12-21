@@ -34,10 +34,6 @@ class NavigationCubit extends Cubit<NavigationState> {
   {
        this.screenIndex=screenIndex1;
         currentScreen=screens[screenIndex];
-        if(screenIndex==4)
-          {
-            ProfileCubit.get(context).setControllers();
-          }
         if(screenIndex==2) {
           tabViewIndex=0;
         }

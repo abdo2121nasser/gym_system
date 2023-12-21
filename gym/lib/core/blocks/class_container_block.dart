@@ -9,9 +9,10 @@ import 'package:intl/intl.dart';
 class ClassContainerBlock extends StatelessWidget {
   final  BookingClassesModel bookingModel;
  final Color primeColor,textColor,backgroundColor;
- final bool ownerAuthoize,isBookingState,isHistoryState;
+ final bool ownerAuthoize,isBookingState,isHistoryState,isClassPassed;
    final VoidCallback? ownerDeleteClass,booking,canceling;
   ClassContainerBlock({
+    this.isClassPassed=false,
     this.isHistoryState=false,
     required this.canceling,
     required this.booking,
@@ -83,7 +84,7 @@ class ClassContainerBlock extends StatelessWidget {
                   style: TextStyle(fontSize: 16,color: textColor),),
               ],
             ),
-            isHistoryState?
+            isHistoryState || isClassPassed?
             SizedBox()
             : Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

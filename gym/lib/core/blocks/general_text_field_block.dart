@@ -1,16 +1,18 @@
 import 'package:calendar_picker/calendar_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 
 
 
 class GeneralTextFieldBlock extends StatelessWidget {
   final String hint;
-  bool onlyInteger,canEdit;
+  bool onlyInteger,canEdit,isStartTime;
   final Icon? preIcon,suffixIcon;
   final TextEditingController controller;
   final Color? hintColor;
   GeneralTextFieldBlock({
+    this.isStartTime=true,
     this.canEdit=true,
     this.onlyInteger=false,
     required this.hint,
@@ -50,13 +52,18 @@ controller: controller,
                 initialDate: DateTime.now(),
                 firstDate: DateTime.now(),
                 lastDate: DateTime.now().add(const Duration(days: 365)),
-                excluded: [
-                  // DateTime.now().add(const Duration(days: 2)),
-                  // DateTime.now().add(const Duration(days: 5)),
-                  // DateTime.now().subtract(const Duration(days: 5)),
-                ],
+                excluded: [],
                 onSelected: (date) {
+                  print('Suffix Icon: $suffixIcon');
 
+                  if(isStartTime)
+                    {
+                      ProfileCubit.get(context).setCreditDate(isStartTime: true, tTime: date);
+                    }
+                  else
+                    {
+                      ProfileCubit.get(context).setCreditDate(isStartTime: false, tTime: date);
+                    }
                   //dataCubit.setTime(isStartDate, date);
                 },
               );

@@ -22,6 +22,7 @@ class BookingCubit extends Cubit<BookingState> {
   TextEditingController classMaxCustomer=TextEditingController(text: '30');
     List<BookingClassesModel> availableClassesModel=[];
     List<BookingHistory> historyClasses=[];
+    List<BookingHistory> recentClasses=[];
   changeSelectedDay(DateTime day)
   {
      selectedDay=day;
@@ -119,34 +120,79 @@ class BookingCubit extends Cubit<BookingState> {
       })
           .catchError((error){
             emit(GetAllAvailableClassErrorState());
-            print('${error}  -----------------------------------------------');
+            print('${error}');
       });
     }
 
-    deleteGymClass({required String docId})
+    deleteGymClass({required String docId,required context})
     async {
       emit(DeleteGymClassLoadingState());
-
+   await returnAllCredits(classDocIc: docId,context: context);
     await  FirebaseFirestore.instance
           .collection(Constants.kGymClassesCollectionId)
           .doc(docId)
           .delete()
-          .then((value) {
+          .then((value) async {
         emit(DeleteGymClassSuccessState());
+       await getAllAvailableClass();
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('success delete class')));
       }).catchError((error){
         emit(DeleteGymClassErrorState());
         print(error);
       });
     }
+    returnAllCredits({required String classDocIc,required context})
+    async {
+       emit(ReturnAllCreditsLoadingState());
+        await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(classDocIc).collection(Constants.kGymClassCustomerCollectionId)
+            .get()
+            .then((value) {
+              value.docs.forEach((element) async {
+               await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).where('email',isEqualTo: element.data()['email']).get()
+                    .then((value) async {
+                      if(await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(value.docs[0].id).collection(Constants.kGymClassesHistoryBookingCollectionId).get().then((value) {return value.docs.isNotEmpty;})
+                    /*  &&   */ )
+                      //todo fix if the class has been passed dont return the credit
+               {
+                await  ProfileCubit.get(context).incrementCredit(currentCredit1: value.docs[0].data()['current credit']+1,docId:  value.docs[0].id);
+                await cancelClassGymFromHistory(mainDocId: value.docs[0].id,
+                    subDocId:  await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(value.docs[0].id).collection(Constants.kGymClassesHistoryBookingCollectionId).where('document id',isEqualTo: classDocIc).get().then((value) {return value.docs[0].id;}).catchError((error){print(error);}),
+                    context: context);
+                getHistroyGymClasses(context: context);
+              }
+
+                })
+                    .catchError((error){
+                      print(error);
+                });
+              });
+              emit(ReturnAllCreditsSuccessState());
+        })
+            .catchError((error){
+          emit(ReturnAllCreditsErrorState());
+              print(error);
+        });
+
+
+
+
+    }
+
+
+
+
     getHistroyGymClasses({required context})
     async {
       emit(GetHistoryClassesHistoryLoadingState());
-      historyClasses.clear();
+      if(ProfileCubit.get(context).userDataModel==null) {
+        await  ProfileCubit.get(context).reciveAllUserData();
+      }
+
       await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId)
-          .doc(ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
+          .doc(await ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
           .get()
           .then((value) {
-
+        historyClasses.clear();
             value.docs.forEach((element) {
               historyClasses.add(BookingHistory.fromJson(snapshot: element.data(), cSubDocId: element.id));
             });
@@ -211,12 +257,44 @@ class BookingCubit extends Cubit<BookingState> {
     return resultObject.currentSubDocId;
   }
 
+   decrementCustomerNumber({required String docId,required int customerNumber})
+   async {
+    emit(DecrementCustomerNumberLoadingState());
+    await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(docId)
+        .update({
+      'customer number':customerNumber-1
+    })
+        .then((value) {
+          emit(DecrementCustomerNumberSuccessState());
+    })
+        .catchError((error){
+          emit(DecrementCustomerNumberErrorState());
+           print(error);
+    });
+   }
+  incrementCustomerNumber({required String docId,required int customerNumber})
+  async {
+    emit(IncrementCustomerNumberLoadingState());
+    await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(docId)
+        .update({
+      'customer number':customerNumber+1
+    })
+        .then((value) {
+          emit(IncrementCustomerNumberSuccessState());
+
+    })
+        .catchError((error){
+          emit(IncrementCustomerNumberErrorState());
+      print(error);
+    });
+  }
 
   bookClass({required String classDocId,required UserDataModel object,required context,required String historyDocId,required BookingClassesModel historyObject})
-  {
+  async {
+   await ProfileCubit.get(context).reciveAllUserData();
     emit(BookClassLoadingState());
     CollectionReference data = FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId);
-    data.doc(classDocId).collection(Constants.kGymClassCustomerCollectionId)
+  await data.doc(classDocId).collection(Constants.kGymClassCustomerCollectionId)
         .add({
       'email':object.email,
       'user name':object.name,
@@ -224,10 +302,13 @@ class BookingCubit extends Cubit<BookingState> {
       'user priority':object.priority
 
     })
-        .then((value) {
-        addGymClassToHistory(userDocId:historyDocId , object:historyObject,context: context);
+        .then((value) async {
+      await addGymClassToHistory(userDocId:historyDocId , object:historyObject,context: context);
+      await ProfileCubit.get(context).decrementCredit();
+      await incrementCustomerNumber(docId: classDocId, customerNumber: historyObject.customerNumber!);
+      await  getAllAvailableClass();
       emit(BookClassSuccessState());
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Booked')));
+     await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Booked'),duration: Duration(seconds: 1),));
     })
         .catchError((error){
       emit(BookClassErrorState());
@@ -236,27 +317,79 @@ class BookingCubit extends Cubit<BookingState> {
 
   }
 
-  cancelBookedClass({required String mainDocId, required String email,required context,required String historyMainDocId,required String historySubDocId,})
+  cancelBookedClass({required String mainDocId, required String email,required context
+    ,required String historyMainDocId,required String historySubDocId
+    ,required int customerNumber,bool isIncrement=true})
   async {
     emit(CancelBookedClassLoadingState());
     await FirebaseFirestore.instance
         .collection(Constants.kGymClassesCollectionId).doc(mainDocId).collection(Constants.kGymClassCustomerCollectionId)
         .doc(
        await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(mainDocId).collection(Constants.kGymClassCustomerCollectionId).where('email',isEqualTo:email ).get().then((value) {
-         return value.docs[0].id;})
+         return value.docs[0].id;}).catchError((error){print(error);})
     )
         .delete()
         .then((value) async {
          await cancelClassGymFromHistory(mainDocId: historyMainDocId, subDocId: historySubDocId, context: context);
-          //todo update class pacage
+       if(isIncrement) {
+        await ProfileCubit.get(context).reciveAllUserData();
+         await ProfileCubit.get(context).incrementCredit(currentCredit1: ProfileCubit.get(context).userDataModel!.currentCredit!+1,docId: ProfileCubit.get(context).userDataModel!.docId!);
+       }
+       await decrementCustomerNumber(docId: mainDocId, customerNumber: customerNumber);
       await  getAllAvailableClass();
-     await getHistroyGymClasses(context: context);
+      await getHistroyGymClasses(context: context);
       emit(CancelBookedClassSuccessState());
-         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('canceled')));
+        await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('canceled')));
     }).catchError((error){
       emit(CancelBookedClassErrorState());
       print(error);
     });
+  }
+
+  getRecentBookedClasses({required context})
+  async {
+    emit(GetRecentBookedClassesLoadingState());
+   try
+   {
+    await getHistroyGymClasses(context: context);
+    recentClasses.clear();
+     historyClasses.forEach((element) {
+       if(
+            element.startDate.toDate().year.toInt()>= DateTime.now().year.toInt()
+           &&  element.startDate.toDate().month.toInt()>= DateTime.now().month.toInt()
+           &&  element.startDate.toDate().day.toInt()>= DateTime.now().day.toInt())
+       {
+         if (element.startDate.toDate().day.toInt() == DateTime.now().day.toInt()
+             && element.startTimeHour.toInt() > DateTime.now().hour.toInt())
+         {
+           recentClasses.add(element);
+         }
+         else if(element.startDate.toDate().day.toInt() > DateTime.now().day.toInt())
+           {
+             recentClasses.add(element);
+           }
+       }
+
+     });
+    recentClasses.sort((a, b) {
+      if (a.startDate.toDate().year != b.startDate.toDate().year) {
+        return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
+      }
+      if (a.startDate.toDate().month != b.startDate.toDate().month) {
+        return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
+      }
+      if (a.startDate.toDate().day != b.startDate.toDate().day) {
+        return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
+      }
+      return a.startTimeHour.compareTo(b.startTimeHour);
+    });
+     emit(GetRecentBookedClassesSuccessState());
+   }catch(error)
+    {
+      emit(GetRecentBookedClassesErrorState());
+      print(error);
+    }
+
 
 
   }

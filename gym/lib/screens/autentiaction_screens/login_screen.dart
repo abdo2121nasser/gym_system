@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym/core/cubits/authentication_cubit/authentication_cubit.dart';
 import 'package:gym/core/cubits/authentication_cubit/authentication_cubit.dart';
+import 'package:gym/core/cubits/book_cubit/booking_cubit.dart';
+import 'package:gym/core/cubits/navigation_cubit/navigation_cubit.dart';
 import 'package:gym/screens/autentiaction_screens/forget_password.dart';
 import 'package:gym/screens/navigation_Screens/navigation_screen.dart';
 import '../../core/blocks/auth_switch_block.dart';
@@ -70,6 +72,7 @@ class LoginScreen extends StatelessWidget {
                           : Text('${massage}'),
                   ));
                   if(await massage=='true') {
+                    NavigationCubit.get(context).changeScreenIndex(screenIndex1: 0, context: context);
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const NavigationScreen(),));
                   }
                 }, width: double.maxFinite,

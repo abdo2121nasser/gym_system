@@ -12,9 +12,17 @@ class UserDataModel {
   final String? imageUrl;
   final String? docId;
   final String? password;
+  final int? currentCredit;
+  final int? packageSize;
+  final Timestamp? startCreditDate;
+  final Timestamp? endCreditDate;
 
 
   UserDataModel({
+    required this.endCreditDate,
+    required this.startCreditDate,
+    required this.currentCredit,
+    required this.packageSize,
     required this.password,
     required this.docId,
     required this.name,
@@ -29,7 +37,7 @@ class UserDataModel {
   factory UserDataModel.fromJson({
     required Map<String, dynamic> snapshot,
     required String mainDocId,
-    required List<Map<String, dynamic>> subCollection,
+     List<Map<String, dynamic>> subCollection=const [{}],
 
   }) {
     return UserDataModel(
@@ -44,7 +52,11 @@ class UserDataModel {
         phone: snapshot['phone'],
         kind: snapshot['users kind'],
         priority: snapshot['user priority'],
-        imageUrl: snapshot[Constants.kUserImageUrl]
+        imageUrl: snapshot[Constants.kUserImageUrl],
+      currentCredit: snapshot['current credit'],
+      packageSize: snapshot['package size'],
+      startCreditDate: snapshot['start credit date'],
+      endCreditDate: snapshot['end credit date']
     );
   }
 }

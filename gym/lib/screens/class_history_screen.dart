@@ -53,8 +53,9 @@ class _ClassHistoryScreenState extends State<ClassHistoryScreen> {
                         backgroundColor: Colors.white,
                         isHistoryState: true,
                         ownerDeleteClass: (){
-                          bCubit.deleteGymClass(docId: bCubit.historyClasses[index].subDocId);
-                         bCubit.cancelClassGymFromHistory(mainDocId: ProfileCubit.get(context).userDataModel!.docId!, subDocId: bCubit.historyClasses[index].currentSubDocId, context: context);
+                          bCubit.deleteGymClass(docId: bCubit.historyClasses[index].subDocId,context: context);
+                         bCubit.cancelClassGymFromHistory(mainDocId: ProfileCubit.get(context).userDataModel!.docId!,
+                             subDocId: bCubit.historyClasses[index].currentSubDocId, context: context);
                          setState(() {
 
                          });

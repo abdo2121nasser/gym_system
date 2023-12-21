@@ -167,6 +167,10 @@ String loginValidation()
       Constants.kUserPriority:registerPriority[registerKindIndex],
       'address':'',
       'phone':'011',
+      'current credit':0,
+      'package size':0,
+      'credit start date':Timestamp.fromDate(DateTime.now()),
+      'credit end date':Timestamp.fromDate(DateTime.now().add(Duration(days: 1))),
       Constants.kUserImageUrl:Constants.kUserInitialimage,
     })
         .then((value) {

@@ -23,7 +23,7 @@ class GymSystem extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AuthenticationCubit()),
         BlocProvider(create: (context) => NavigationCubit()),
-        BlocProvider(create: (context) => ProfileCubit()..reciveAllUserData()),
+        BlocProvider(create: (context) => ProfileCubit()),
         BlocProvider(create: (context) => BookingCubit()..getAllAvailableClass()),
         BlocProvider(create: (context) => ExcerciesCubit()..getAllExcercies()
         ),
@@ -31,6 +31,7 @@ class GymSystem extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: FirebaseAuth.instance.currentUser == null? LoginScreen() : NavigationScreen(),
+        // home: LoginScreen(),
       ),
     );
   }
