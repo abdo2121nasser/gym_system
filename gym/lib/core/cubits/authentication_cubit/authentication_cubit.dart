@@ -31,7 +31,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
    {
      if(value==true) {
        registerKindIndex=index;
-       emit(ChangeCheckBoxvalueState());
+       emit(ChangeCheckBoxValueState());
      }
    }
    changAuthScreenSwitch(String text)
@@ -169,8 +169,8 @@ String loginValidation()
       'phone':'011',
       'current credit':0,
       'package size':0,
-      'credit start date':Timestamp.fromDate(DateTime.now()),
-      'credit end date':Timestamp.fromDate(DateTime.now().add(Duration(days: 1))),
+      'start credit date':Timestamp.fromDate(DateTime.now()),
+      'end credit date':Timestamp.fromDate(DateTime.now().add(Duration(days: 1))),
       Constants.kUserImageUrl:Constants.kUserInitialimage,
     })
         .then((value) {

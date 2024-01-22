@@ -71,6 +71,7 @@ class BookingHistory {
   final int maxCustomerNumber;
   final int? customerNumber;
   final Timestamp startDate;
+  final bool isAttended;
 
   BookingHistory(
       {
@@ -82,7 +83,9 @@ class BookingHistory {
         required this.maxCustomerNumber,
         required this.customerNumber,
       required this.startDate,
-      required this.className});
+      required this.className,
+        required this.isAttended
+      });
 
   factory BookingHistory.fromJson({required Map<String, dynamic> snapshot,required String cSubDocId}) {
     return BookingHistory(
@@ -94,7 +97,8 @@ class BookingHistory {
       startTimeHour: snapshot['start time hour'],
       startTimeMinute: snapshot['start time minute'],
       maxCustomerNumber: snapshot['max customer number'],
-      customerNumber: snapshot['customer number']
+      customerNumber: snapshot['customer number'],
+      isAttended: snapshot['attended'],
     );
   }
 }

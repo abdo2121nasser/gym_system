@@ -54,3 +54,27 @@ class ReturnAllCreditsErrorState extends BookingState {}
 class GetRecentBookedClassesLoadingState extends BookingState {}
 class GetRecentBookedClassesSuccessState extends BookingState {}
 class GetRecentBookedClassesErrorState extends BookingState {}
+
+class GetMyDailyScheduleLoadingState extends BookingState {}
+class GetMyDailyScheduleSuccessState extends BookingState {}
+class GetMyDailyScheduleErrorState extends BookingState {}
+
+class GetCustomerAttendListLoadingState extends  BookingState  {}
+class GetCustomerAttendListSucssedState extends  BookingState  {}
+class GetCustomerAttendListErrorState extends  BookingState  {}
+
+class SetCustomerAbsentLoadingState extends  BookingState  {}
+class SetCustomerAbsentSucssedState extends  BookingState  {}
+class SetCustomerAbsentErrorState extends  BookingState  {}
+
+class SetCustomerAttendedLoadingState extends  BookingState  {}
+class SetCustomerAttendedSucssedState extends  BookingState  {}
+class SetCustomerAttendedErrorState extends  BookingState  {}
+
+class SetCustomerAbsentInHistoryLoadingState extends  BookingState  {}
+class SetCustomerAbsentInHistorySucssedState extends  BookingState  {}
+class SetCustomerAbsentInHistoryErrorState extends  BookingState  {}
+
+class SetCustomerAttendedInHistoryLoadingState extends  BookingState  {}
+class SetCustomerAttendedInHistorySucssedState extends  BookingState  {}
+class SetCustomerAttendedInHistoryErrorState extends  BookingState  {}

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym/core/cubits/excercies_cubit/excercies_cubit.dart';
 import 'package:gym/screens/navigation_Screens/excercies_screen.dart';
-import 'package:gym/screens/navigation_Screens/progress_screen.dart';
 import 'package:gym/screens/tab_view_screens/tab_view_body_parts_screen.dart';
 import 'package:gym/screens/tab_view_screens/tab_view_excercies_screen.dart';
 import 'package:meta/meta.dart';
@@ -22,7 +21,6 @@ class NavigationCubit extends Cubit<NavigationState> {
     HomeScreen(),
     BookScreen(),
     ExcerciesScreen(),
-    ProgressScreen(),
     ProfileScreen()
   ];
   int screenIndex=0;
@@ -36,6 +34,7 @@ class NavigationCubit extends Cubit<NavigationState> {
         currentScreen=screens[screenIndex];
         if(screenIndex==2) {
           tabViewIndex=0;
+          currentTabViewScreen=tabViewContainers[tabViewIndex];
         }
 
        emit(ChangeScreenIndexState());

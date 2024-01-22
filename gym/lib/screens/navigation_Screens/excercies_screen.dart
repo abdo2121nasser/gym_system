@@ -16,7 +16,7 @@ class ExcerciesScreen extends StatelessWidget {
       builder: (context, state) {
         var navCubit=NavigationCubit.get(context);
         return SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+         // physics: BouncingScrollPhysics(),
           child: Container(
                    color: Colors.white,
             child: Column(

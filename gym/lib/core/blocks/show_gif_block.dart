@@ -30,7 +30,7 @@ ShowGifBlock({required this.gifUrl,required this.name});
                image: Image.network(
                  gifUrl,
                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                     if (loadingProgress == null) {
+                     if (loadingProgress != null) {
                        return child;
                      } else {
                        return Center(

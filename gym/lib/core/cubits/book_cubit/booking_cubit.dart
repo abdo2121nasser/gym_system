@@ -4,8 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym/core/blocks/alert_dialog_box_block.dart';
+import 'package:gym/core/cubits/authentication_cubit/authentication_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/core/models/firebase_models/booking_data_data_model.dart';
+import 'package:gym/core/models/firebase_models/class_customer_model.dart';
 import 'package:meta/meta.dart';
 
 import '../../constants/constants.dart';
@@ -21,8 +23,11 @@ class BookingCubit extends Cubit<BookingState> {
   TextEditingController classCouchName=TextEditingController();
   TextEditingController classMaxCustomer=TextEditingController(text: '30');
     List<BookingClassesModel> availableClassesModel=[];
+  List<BookingClassesModel> myDailySchedulModel=[];
     List<BookingHistory> historyClasses=[];
     List<BookingHistory> recentClasses=[];
+  List<ClassCustomerModel> customerAttendList=[];
+  List<ClassCustomerModel> customerAbsentList=[];
   changeSelectedDay(DateTime day)
   {
      selectedDay=day;
@@ -37,10 +42,8 @@ class BookingCubit extends Cubit<BookingState> {
         addFunction: (){
           addGymClasses(context: context);
           Navigator.of(context).pop();
-          classStartTime=TimeOfDay.now();
-          className.clear();
-          classMaxCustomer.text='30';
-          classCouchName.clear();
+
+
         },
         cancelFunction: (){
           Navigator.of(context).pop();
@@ -89,7 +92,8 @@ class BookingCubit extends Cubit<BookingState> {
         .then((value) {
           className.clear();
           classCouchName.clear();
-          classMaxCustomer.clear();
+          classStartTime=TimeOfDay.now();
+          classMaxCustomer.text='30';
           emit(AddClassGymSuccessState());
           getAllAvailableClass();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('success add Class')));
@@ -105,23 +109,25 @@ class BookingCubit extends Cubit<BookingState> {
     async {
       emit(GetAllAvailableClassLoadingState());
       availableClassesModel.clear();
-      await FirebaseFirestore.instance
-          .collection(Constants.kGymClassesCollectionId)
-      .where('start date',isEqualTo: Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day)))
-          .orderBy('start time hour').get()
-          .then((value) async {
-            for(int i=0;i<value.docs.length;i++)
-              {
-                availableClassesModel!.add(await BookingClassesModel.fromJson(snapshot: await value.docs[i].data(),documentId:value.docs[i].id ));
+     if(availableClassesModel.isEmpty)
+       {
+         await FirebaseFirestore.instance
+             .collection(Constants.kGymClassesCollectionId)
+             .where('start date',isEqualTo: Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day)))
+             .orderBy('start time hour').get()
+             .then((value) async {
+               availableClassesModel.clear();
+               value.docs.forEach((element) {
+                 availableClassesModel.add(BookingClassesModel.fromJson(snapshot: element.data(),documentId:element.id ));
 
-              }
-            emit(GetAllAvailableClassSuccessState());
-
-      })
-          .catchError((error){
-            emit(GetAllAvailableClassErrorState());
-            print('${error}');
-      });
+               });
+           emit(GetAllAvailableClassSuccessState());
+         })
+             .catchError((error){
+           emit(GetAllAvailableClassErrorState());
+           print('${error}');
+         });
+       }
     }
 
     deleteGymClass({required String docId,required context})
@@ -150,9 +156,11 @@ class BookingCubit extends Cubit<BookingState> {
               value.docs.forEach((element) async {
                await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).where('email',isEqualTo: element.data()['email']).get()
                     .then((value) async {
-                      if(await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(value.docs[0].id).collection(Constants.kGymClassesHistoryBookingCollectionId).get().then((value) {return value.docs.isNotEmpty;})
-                    /*  &&   */ )
-                      //todo fix if the class has been passed dont return the credit
+                      if(await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(value.docs[0].id)
+                          .collection(Constants.kGymClassesHistoryBookingCollectionId).get().then((value)
+                      {return value.docs.isNotEmpty;}
+                      )
+                      )
                {
                 await  ProfileCubit.get(context).incrementCredit(currentCredit1: value.docs[0].data()['current credit']+1,docId:  value.docs[0].id);
                 await cancelClassGymFromHistory(mainDocId: value.docs[0].id,
@@ -220,6 +228,7 @@ class BookingCubit extends Cubit<BookingState> {
         'start time hour':object.startTimeHour,
         'start time minute':object.startTimeMinute,
         'document id':object.docId,
+        'attended':true
       })
           .then((value) {
             emit(AddGymClassToHistorySuccessState());
@@ -299,7 +308,9 @@ class BookingCubit extends Cubit<BookingState> {
       'email':object.email,
       'user name':object.name,
       'phone':object.phone,
-      'user priority':object.priority
+      'user priority':object.priority,
+      'attended':true,
+    'image url': ProfileCubit.get(context).userDataModel!.imageUrl,
 
     })
         .then((value) async {
@@ -307,6 +318,7 @@ class BookingCubit extends Cubit<BookingState> {
       await ProfileCubit.get(context).decrementCredit();
       await incrementCustomerNumber(docId: classDocId, customerNumber: historyObject.customerNumber!);
       await  getAllAvailableClass();
+      print(availableClassesModel.length);
       emit(BookClassSuccessState());
      await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Booked'),duration: Duration(seconds: 1),));
     })
@@ -336,7 +348,7 @@ class BookingCubit extends Cubit<BookingState> {
          await ProfileCubit.get(context).incrementCredit(currentCredit1: ProfileCubit.get(context).userDataModel!.currentCredit!+1,docId: ProfileCubit.get(context).userDataModel!.docId!);
        }
        await decrementCustomerNumber(docId: mainDocId, customerNumber: customerNumber);
-      await  getAllAvailableClass();
+      //await  getAllAvailableClass();
       await getHistroyGymClasses(context: context);
       emit(CancelBookedClassSuccessState());
         await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('canceled')));
@@ -389,11 +401,143 @@ class BookingCubit extends Cubit<BookingState> {
       emit(GetRecentBookedClassesErrorState());
       print(error);
     }
+  }
 
+     getMyDailySchedule({required String couchName})
+     async {
+    myDailySchedulModel.clear();
+       emit(GetMyDailyScheduleLoadingState());
+       await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId)
+           .where('couch name',isEqualTo: couchName,)
+           .where('start date',isEqualTo:Timestamp.fromDate(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day)))
+           .get()
+           .then((value) {
+             value.docs.forEach((element) {
+                  myDailySchedulModel.add(BookingClassesModel.fromJson(snapshot: element.data(), documentId: element.id));
+             });
+         emit(GetMyDailyScheduleSuccessState());
+       })
+           .catchError((error){
+         emit(GetMyDailyScheduleErrorState());
+         print(error);
+       });
+     }
 
+     getClassCustomerList({required String mainDocId})
+     async {
+  emit(GetCustomerAttendListLoadingState());
+  await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(mainDocId)
+      .collection(Constants.kGymClassCustomerCollectionId).get()
+      .then((value) {
+        customerAttendList.clear();
+        customerAbsentList.clear();
+    value.docs.forEach((element) {
+        if(element.data()['attended']==true) {
+          customerAttendList.add(ClassCustomerModel.fromJson(
+              json: element.data(), docId: element.id));
+        }
+        else
+          {
+            customerAbsentList.add(ClassCustomerModel.fromJson(json: element.data(),docId: element.id));
+          }
+    });
+
+        emit(GetCustomerAttendListSucssedState());
+  })
+      .catchError((error){
+        emit(GetCustomerAttendListErrorState());
+        print(error);
+  });
+     }
+
+     setCustomerAbsent({required String mainDocId,required String subDocId,required context})
+     async {
+       emit(SetCustomerAbsentLoadingState());
+       await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(mainDocId).collection(Constants.kGymClassCustomerCollectionId).doc(subDocId)
+           .update({
+         'attended':false
+       })
+           .then((value) async {
+         setCustomerAbsentInHistory(context: context,subDocId: subDocId,mainDocId: mainDocId);
+            await getClassCustomerList(mainDocId: mainDocId);
+         emit(SetCustomerAbsentSucssedState());
+       })
+           .catchError((error){
+             emit(SetCustomerAbsentErrorState());
+             print(error);
+       });
+
+     }
+  setCustomerAbsentInHistory({required String subDocId,required context,required String mainDocId})
+  async {
+    emit(SetCustomerAbsentInHistoryLoadingState());
+    String historySubDocId=await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
+        .where('document id',isEqualTo: mainDocId).get().then((value){
+          return value.docs[0].id;
+    });
+    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId)
+        .collection(Constants.kGymClassesHistoryBookingCollectionId).doc(historySubDocId)
+        .update({
+      'attended':false
+    })
+        .then((value) async {
+      emit(SetCustomerAbsentInHistorySucssedState());
+    })
+        .catchError((error){
+      emit(SetCustomerAbsentInHistoryErrorState());
+      print(error);
+    });
+
+  }
+
+  setCustomerAttended({required String mainDocId,required String subDocId,required context})
+  async {
+    emit(SetCustomerAttendedLoadingState());
+    await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(mainDocId).collection(Constants.kGymClassCustomerCollectionId).doc(subDocId)
+        .update({
+      'attended':true
+    })
+        .then((value) async {
+      setCustomerAttendedInHistory(context: context,subDocId: subDocId,mainDocId: mainDocId );
+      await getClassCustomerList(mainDocId: mainDocId);
+      emit(SetCustomerAttendedSucssedState());
+    })
+        .catchError((error){
+      emit(SetCustomerAttendedErrorState());
+      print(error);
+    });
+
+  }
+
+  setCustomerAttendedInHistory({required String subDocId,required context,required String mainDocId})
+  async {
+    emit(SetCustomerAttendedInHistoryLoadingState());
+    String historySubDocId=await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
+        .where('document id',isEqualTo: mainDocId).get().then((value){
+      return value.docs[0].id;
+    });
+    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId)
+        .collection(Constants.kGymClassesHistoryBookingCollectionId).doc(historySubDocId)
+        .update({
+      'attended':true
+    })
+        .then((value) async {
+      emit(SetCustomerAttendedInHistorySucssedState());
+    })
+        .catchError((error){
+      emit(SetCustomerAttendedInHistoryErrorState());
+      print(error);
+    });
 
   }
 
 
 
 }
+
+
+
+
+
+
+

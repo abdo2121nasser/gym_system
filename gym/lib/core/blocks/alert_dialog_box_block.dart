@@ -24,58 +24,60 @@ class AlertDialogBoxBlock extends StatelessWidget {
   listener: (context, state) {
   },
   builder: (context, state) {
-    return AlertDialog(
-      insetPadding: const EdgeInsets.symmetric(vertical: 80,horizontal: 30),
-      backgroundColor: Colors.white,
-      titlePadding:EdgeInsets.only(top: 20,left: 80,bottom: 10),
-      title: Text('Add Class',style: TextStyle(fontWeight: FontWeight.bold),),
-      content: Column(
-        children: [
-          GeneralTextFieldBlock(hint:'Class Name', controller: className),
-          const SizedBox(height: 10,),
-          InkWell(
-            onTap:updatetime,
-            child: Container(
-              padding: EdgeInsets.only(left: 10),
-              width: double.maxFinite,
-              height: 60,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.indigo.shade400,width: 2),
-                  borderRadius: BorderRadius.circular(10)
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.access_time,color: Colors.indigo.shade400,),
-                  const SizedBox(width: 5,),
-                  const Text('Start Time :',
-                    style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                  Text(BookingCubit.get(context).classStartTime!.format(context),
-                    style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),)
-                ],
+    return SingleChildScrollView(
+      child: AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(vertical: 80,horizontal: 30),
+        backgroundColor: Colors.white,
+        titlePadding:const EdgeInsets.only(top: 20,left: 80,bottom: 10),
+        title: const Text('Add Class',style: TextStyle(fontWeight: FontWeight.bold),),
+        content: Column(
+          children: [
+            GeneralTextFieldBlock(hint:'Class Name', controller: className),
+            const SizedBox(height: 10,),
+            InkWell(
+              onTap:updatetime,
+              child: Container(
+                padding: const EdgeInsets.only(left: 10),
+                width: double.maxFinite,
+                height: 60,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.indigo.shade400,width: 2),
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.access_time,color: Colors.indigo.shade400,),
+                    const SizedBox(width: 5,),
+                    const Text('Start Time :',
+                      style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                    Text(BookingCubit.get(context).classStartTime!.format(context),
+                      style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),)
+                  ],
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 10,),
-          GeneralTextFieldBlock(hint:'Class Couch', controller: classCouchName),
-          SizedBox(height: 10,),
-          GeneralTextFieldBlock(hint:'max customer number', controller:classMaxCustomerNumber,onlyInteger: true, ),
-          const SizedBox(height: 20,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GeneralButtonBlock(lable: 'Cancel', function: cancelFunction,
-                  width: double.infinity, hight: 30,
-                  textColor: Colors.white, backgroundColor: Colors.indigo.shade400,
-                  borderRadius: 10),
-              SizedBox(width: 20,),
-              GeneralButtonBlock(lable: 'Add', function: addFunction,
-                  width: double.infinity, hight: 30,
-                  textColor: Colors.white, backgroundColor: Colors.indigo.shade400,
-                  borderRadius: 10),
-            ],
-          )
-        ],
+            const SizedBox(height: 10,),
+            GeneralTextFieldBlock(hint:'Class Couch', controller: classCouchName),
+            const SizedBox(height: 10,),
+            GeneralTextFieldBlock(hint:'max customer number', controller:classMaxCustomerNumber,onlyInteger: true, ),
+            const SizedBox(height: 20,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GeneralButtonBlock(lable: 'Cancel', function: cancelFunction,
+                    width: double.infinity, hight: 30,
+                    textColor: Colors.white, backgroundColor: Colors.indigo.shade400,
+                    borderRadius: 10),
+                const SizedBox(width: 20,),
+                GeneralButtonBlock(lable: 'Add', function: addFunction,
+                    width: double.infinity, hight: 30,
+                    textColor: Colors.white, backgroundColor: Colors.indigo.shade400,
+                    borderRadius: 10),
+              ],
+            )
+          ],
+        ),
       ),
     );
   },

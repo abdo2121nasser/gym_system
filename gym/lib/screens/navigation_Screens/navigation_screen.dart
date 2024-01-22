@@ -97,7 +97,6 @@ class NavigationScreen extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Books'),
           BottomNavigationBarItem(icon: Icon(Icons.accessibility_outlined), label:'Exercises'),
-          BottomNavigationBarItem(icon: Icon(Icons.signal_cellular_alt), label: 'Progress'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -107,8 +106,9 @@ class NavigationScreen extends StatelessWidget {
                 FloatingActionButton(
                   backgroundColor: Colors.indigo.shade400,
                   onPressed: () {
-                    if(bCubit.selectedDay.isAfter(DateTime.now())) {
+                    if(bCubit.selectedDay.isAfter(DateTime.now()) || true) {
                       bCubit.showDialogBox(context: context);
+                      // todo remove the or in condition
                     } else
                       {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(duration: Duration(seconds: 2),

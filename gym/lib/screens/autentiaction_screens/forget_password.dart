@@ -16,7 +16,13 @@ class ForgetPasswordScreen extends StatelessWidget {
       builder: (context, state) {
         var authData=AuthenticationCubit.get(context);
         return Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            backgroundColor: Colors.blue,
+            centerTitle: true,
+            title: Text('reset password',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
+          ),
+
           body: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

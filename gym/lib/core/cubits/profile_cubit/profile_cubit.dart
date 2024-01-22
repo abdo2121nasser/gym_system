@@ -32,25 +32,28 @@ class ProfileCubit extends Cubit<ProfileState> {
      List<UserDataModel> creditUserDataModel=[];
   File? image;
   String imagePath='';
-  creditDateValidation({required context})
-  async {
-   await reciveAllUserData();
-    if(userDataModel!=null)
-      {
-        if(userDataModel!.endCreditDate!.toDate().isBefore(DateTime.now()) && userDataModel!.currentCredit!.toInt()!=0)
-        {
-          startCreditDate=userDataModel!.startCreditDate!.toDate();
-          endCreditDate=userDataModel!.endCreditDate!.toDate();
-          currentCreditController.text='0';
-          searchUserEmailController.text=userDataModel!.email!;
-          emit(CreditDateValidationState());
-          await getCreditUserData(context: context);
-          await updateCredit(context: context);
-          print('-----------------------------');
-        }
-      }
-
-  }
+  // creditDateValidation({required context})
+  // async {
+  //  await reciveAllUserData();
+  //   if(userDataModel!=null)
+  //     {
+  //       if(userDataModel!.endCreditDate!.toDate().isBefore(DateTime.now()) && userDataModel!.currentCredit!.toInt()!=0)
+  //       {
+  //         print('-----------------------------');
+  //         print('dncjdjkdbkjdbdjvbdjvbdjvbdjvbd,jvbd,jvbd,jvbd,jvbd,jvbd,jvbd,vbd,jvbd,jvbd,vb,djvb,d');
+  //         print(userDataModel!.endCreditDate!.toDate().isBefore(DateTime.now()));
+  //         startCreditDate=userDataModel!.startCreditDate!.toDate();
+  //         endCreditDate=userDataModel!.endCreditDate!.toDate();
+  //         currentCreditController.text='0';
+  //         searchUserEmailController.text=userDataModel!.email!;
+  //         emit(CreditDateValidationState());
+  //         await getCreditUserData(context: context);
+  //         await updateCredit(context: context);
+  //
+  //       }
+  //     }
+  //
+  // }
  
 
   setCreditDate({required bool isStartTime,required DateTime tTime})
@@ -99,6 +102,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     phone.text=userDataModel!.phone!;
     address.text=userDataModel!.address!;
     currentCreditController!.text=userDataModel!.currentCredit!.toString();
+       image=null;
+       imagePath='';
     emit(SetControllersState());
   }
   pickImage()
@@ -153,7 +158,7 @@ class ProfileCubit extends Cubit<ProfileState> {
    //         emit(UpdateEmailErrorState());
    //   });
    // }
- Future<String?> updateProfile()
+ Future<String?> updateProfile({required context})
   async {
     if(image!=null)
       {
@@ -171,12 +176,13 @@ class ProfileCubit extends Cubit<ProfileState> {
      //  Constants.kUserEmail:email.text,
       'phone':phone.text,
       'address':address.text,
-      if(imagePath!=null && imagePath.isNotEmpty)
-      'image path':imagePath
+      if(imagePath !=null && imagePath.isNotEmpty)
+      Constants.kUserImageUrl:imagePath.toString()
     }
     )
         .then((value) {
           emit(UpdateProfileSuccessState());
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success Update')));
 
     })
         .catchError((error){
@@ -224,7 +230,6 @@ class ProfileCubit extends Cubit<ProfileState> {
              currentCreditController!.text=creditUserDataModel[0].currentCredit!.toString();
              startCreditController.text='${creditUserDataModel[0].startCreditDate!.toDate().year}/${creditUserDataModel[0].startCreditDate!.toDate().month}/${creditUserDataModel[0].startCreditDate!.toDate().day}';
              endCreditController.text='${creditUserDataModel[0].endCreditDate!.toDate().year}/${creditUserDataModel[0].endCreditDate!.toDate().month}/${creditUserDataModel[0].endCreditDate!.toDate().day}';
-
              emit(GetCreditUserDataSuccessState());
      })
          .catchError((error){
@@ -239,6 +244,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
    updateCredit({required context})
    async {
+    // await getCreditUserData(context: context);
      emit(UpdateCreditLoadingState());
     await FirebaseFirestore.instance
          .collection(Constants.kUsersCollectionId)

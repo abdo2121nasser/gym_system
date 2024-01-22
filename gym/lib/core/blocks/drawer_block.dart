@@ -6,7 +6,8 @@ import 'package:gym/core/cubits/navigation_cubit/navigation_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/screens/class_history_screen.dart';
-import 'package:gym/screens/edit_customer_profile_screen.dart';
+import 'package:gym/screens/add_credit_to_customer_screen.dart';
+import 'package:gym/screens/my_schedule_screen.dart';
 import '../../screens/autentiaction_screens/forget_password.dart';
 import '../../screens/autentiaction_screens/login_screen.dart';
 import '../cubits/authentication_cubit/authentication_cubit.dart';
@@ -90,7 +91,27 @@ class DrawerBlock extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ClassHistoryScreen(),));
               },
             ),
-           const Divider(thickness: 2,endIndent: 20,indent: 20,),
+            if(profCubit.userDataModel!.priority=='2')
+              Column(
+                children: [
+                  const Divider(thickness: 2,endIndent: 20,indent: 20,),
+                  ListTile(
+
+                    leading: const Icon(
+                      Icons.schedule_outlined,
+                      color: Colors.grey,
+                    ),
+                    title: const Text('My Schedule',
+                      style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.bold),),
+                    onTap: () {
+                      if(profCubit.userDataModel!= null) {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) =>   MyScheduleScreen(couchName: profCubit.userDataModel!.name!),));
+                      }
+                    },
+                  ),
+                ],
+              ),
+            const Divider(thickness: 2,endIndent: 20,indent: 20,),
             ListTile(
               leading: const Icon(
                 Icons.edit,
@@ -99,7 +120,7 @@ class DrawerBlock extends StatelessWidget {
               title: const Text('Edit Profile',
     style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.bold),),
               onTap: () {
-               navCubit.changeScreenIndex(screenIndex1: 4,context: context);
+               navCubit.changeScreenIndex(screenIndex1: 3,context: context);
                Scaffold.of(context).closeDrawer();
               },
             ),
@@ -128,7 +149,8 @@ class DrawerBlock extends StatelessWidget {
                   title: const Text('Credit',
                     style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.bold),),
                   onTap: () async {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditCustomerCreditScreen(),));
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AddCreditToCustomerScreen(),));
                   },
                 ),
                 const Divider(thickness: 2,endIndent: 20,indent: 20,),

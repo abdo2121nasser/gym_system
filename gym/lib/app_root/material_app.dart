@@ -6,6 +6,7 @@ import 'package:gym/core/cubits/navigation_cubit/navigation_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/screens/autentiaction_screens/login_screen.dart';
 import 'package:gym/screens/autentiaction_screens/register_screen.dart';
+import 'package:gym/screens/class_customer_list_screen.dart';
 import 'package:gym/screens/navigation_Screens/navigation_screen.dart';
 
 import '../core/cubits/authentication_cubit/authentication_cubit.dart';
@@ -24,14 +25,17 @@ class GymSystem extends StatelessWidget {
         BlocProvider(create: (context) => AuthenticationCubit()),
         BlocProvider(create: (context) => NavigationCubit()),
         BlocProvider(create: (context) => ProfileCubit()),
-        BlocProvider(create: (context) => BookingCubit()..getAllAvailableClass()),
+        BlocProvider(create: (context) => BookingCubit() ..getAllAvailableClass()),
         BlocProvider(create: (context) => ExcerciesCubit()..getAllExcercies()
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: FirebaseAuth.instance.currentUser == null? LoginScreen() : NavigationScreen(),
-        // home: LoginScreen(),
+      child: SafeArea(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: FirebaseAuth.instance.currentUser == null? LoginScreen() : NavigationScreen(),
+          // home: LoginScreen(),
+
+        ),
       ),
     );
   }

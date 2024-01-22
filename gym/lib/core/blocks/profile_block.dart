@@ -34,7 +34,7 @@ class ProfileBlock extends StatelessWidget {
               hintColor: Colors.black,),
             const SizedBox(height: 15,),
             GeneralTextFieldBlock(
-              hint: 'phone', controller: profCubit.phone,
+              hint: 'phone', controller: profCubit.phone,onlyInteger: true,
               preIcon: const Icon(Icons.phone, color: Colors.blueAccent),
               hintColor: Colors.black,),
             const SizedBox(height: 15,),

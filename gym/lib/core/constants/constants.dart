@@ -17,9 +17,10 @@ class Constants
   static String kCustomerKind='customer';
   static String kTrainerKind='trainer';
   static String kOwnerKind='owner';
+
   static String kImageSmileMan='lib/core/assets/smileman2.jpg';
   static String kImageDrawer='lib/core/assets/drawer.png';
-   static Color kBlueColor=Color(0xff1E0E48);
+   static Color kBlueColor=const Color(0xff1E0E48);
 
   static String kArm='lib/core/assets/arm.jpeg';
   static String kBack='lib/core/assets/back.jpg';

@@ -42,7 +42,7 @@ class ClassContainerBlock extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
         child: Column(
 
-          mainAxisAlignment: !ownerAuthoize || isHistoryState?
+          mainAxisAlignment: !ownerAuthoize || isHistoryState ||ownerAuthoize?
           MainAxisAlignment.spaceEvenly: MainAxisAlignment.start,
 
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +52,7 @@ class ClassContainerBlock extends StatelessWidget {
               children: [
                 Text(bookingModel.className!,
                   style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color:primeColor),),
-               if(ownerAuthoize)
+               if(ownerAuthoize && !isClassPassed)
                 IconButton(
                   onPressed: ownerDeleteClass,
                   icon: Icon(Icons.delete,color: Colors.red,),

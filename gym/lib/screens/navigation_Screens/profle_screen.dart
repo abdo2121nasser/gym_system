@@ -111,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
               child: GeneralButtonBlock(lable: 'Edit Profile', function: (){
-                profCubit.updateProfile();
+                profCubit.updateProfile(context: context);
               },
                   width: double.maxFinite, hight: 60,
                   textColor: Colors.white, backgroundColor:Colors.blueAccent,

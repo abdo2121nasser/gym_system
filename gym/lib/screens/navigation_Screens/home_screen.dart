@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: ProfileCubit.get(context)..reciveAllUserData()..creditDateValidation(context: context),
+      value: ProfileCubit.get(context)..reciveAllUserData(),
       child: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {},
         builder: (context, state) {
@@ -54,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                                         style: TextStyle(fontSize: 15,
                                             color: Colors.yellow.shade900),),
                                       Text(
-                                        '${profCubit.userDataModel!.currentCredit!} credit expireing '
+                                        '${profCubit.userDataModel!.currentCredit!} credit expireing on '
                                             '${profCubit.userDataModel!.endCreditDate!.toDate().day} '
                                             '${DateFormat.MMM().format(profCubit.userDataModel!.endCreditDate!.toDate())} '
                                             '${profCubit.userDataModel!.endCreditDate!.toDate().year}',
@@ -66,7 +66,9 @@ class HomeScreen extends StatelessWidget {
                               ),
                                Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 10),
-                                child: CreditIndicatorBlock(percent: (profCubit.userDataModel!.packageSize!.toInt() - profCubit.userDataModel!.currentCredit!.toInt())/profCubit.userDataModel!.packageSize!.toInt()),
+                                child:  profCubit.userDataModel!.packageSize!.toInt()==0 && profCubit.userDataModel!.currentCredit!.toInt()==0?
+                                    CreditIndicatorBlock(percent: 1):
+                                CreditIndicatorBlock(percent: (profCubit.userDataModel!.packageSize!.toInt() - profCubit.userDataModel!.currentCredit!.toInt())/profCubit.userDataModel!.packageSize!.toInt()),
                               ),
                             ],
                           ),
@@ -88,7 +90,9 @@ class HomeScreen extends StatelessWidget {
                                     textColor: Colors.grey.shade700,
                                     backgroundColor: Colors.white,
                                     isHistoryState: true,
-                                    ownerDeleteClass: (){},
+                                    ownerDeleteClass: () async {
+                                      await  bCubit.deleteGymClass(docId:bCubit.availableClassesModel[index].docId!,context: context);
+                                    },
                                     ownerAuthoize: ProfileCubit.get(context).userDataModel!.priority=='1'?true:false,
                                   ),
                               separatorBuilder: (context, index) => const SizedBox(height: 10,),
