@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym/core/blocks/body_part_block.dart';
-import 'package:gym/screens/show_list_of_body_parts_screen.dart';
+import 'package:gym/screens/other_screens/show_list_of_body_parts_screen.dart';
 import 'package:gym/core/constants/constants.dart';
 import 'package:gym/core/cubits/excercies_cubit/excercies_cubit.dart';
 

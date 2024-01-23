@@ -32,28 +32,80 @@ class ProfileCubit extends Cubit<ProfileState> {
      List<UserDataModel> creditUserDataModel=[];
   File? image;
   String imagePath='';
-  // creditDateValidation({required context})
-  // async {
-  //  await reciveAllUserData();
-  //   if(userDataModel!=null)
-  //     {
-  //       if(userDataModel!.endCreditDate!.toDate().isBefore(DateTime.now()) && userDataModel!.currentCredit!.toInt()!=0)
-  //       {
-  //         print('-----------------------------');
-  //         print('dncjdjkdbkjdbdjvbdjvbdjvbdjvbd,jvbd,jvbd,jvbd,jvbd,jvbd,jvbd,vbd,jvbd,jvbd,vb,djvb,d');
-  //         print(userDataModel!.endCreditDate!.toDate().isBefore(DateTime.now()));
-  //         startCreditDate=userDataModel!.startCreditDate!.toDate();
-  //         endCreditDate=userDataModel!.endCreditDate!.toDate();
-  //         currentCreditController.text='0';
-  //         searchUserEmailController.text=userDataModel!.email!;
-  //         emit(CreditDateValidationState());
-  //         await getCreditUserData(context: context);
-  //         await updateCredit(context: context);
-  //
-  //       }
-  //     }
-  //
-  // }
+  creditDateValidation({required context})
+  async {
+   await reciveAllUserData();
+    if(userDataModel!=null)
+      {
+        if(userDataModel!.endCreditDate!.toDate().isBefore(DateTime.now()) && userDataModel!.currentCredit!.toInt()!=0)
+        {
+          startCreditDate=userDataModel!.startCreditDate!.toDate();
+          endCreditDate=userDataModel!.endCreditDate!.toDate();
+          currentCreditController.text='0';
+          newCreditController.text='0';
+          searchUserEmailController.text=userDataModel!.email!;
+          emit(CreditDateValidationState());
+          await getCreditUserData(context: context);
+          await updateCredit(context: context);
+
+        }
+      }
+
+  }
+
+  getCreditUserData({required context})
+  async {
+    creditUserDataModel.clear();
+    emit(GetCreditUserDataLoadingState());
+    await FirebaseFirestore.instance
+        .collection(Constants.kUsersCollectionId).where('email' ,isEqualTo:searchUserEmailController.text)
+        .get()
+        .then((value) {
+
+      creditUserDataModel.add(UserDataModel.fromJson(snapshot: value.docs[0].data(), mainDocId: value.docs[0].id,));
+      currentCreditController!.text=creditUserDataModel[0].currentCredit!.toString();
+      startCreditController.text='${creditUserDataModel[0].startCreditDate!.toDate().year}/${creditUserDataModel[0].startCreditDate!.toDate().month}/${creditUserDataModel[0].startCreditDate!.toDate().day}';
+      endCreditController.text='${creditUserDataModel[0].endCreditDate!.toDate().year}/${creditUserDataModel[0].endCreditDate!.toDate().month}/${creditUserDataModel[0].endCreditDate!.toDate().day}';
+      emit(GetCreditUserDataSuccessState());
+    })
+        .catchError((error){
+      emit(GetCreditUserDataErrorState());
+      print(error);
+      if(error.toString()!='Null check operator used on a null value') {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('error has happened check the email might be in correct')));
+      }
+
+    });
+  }
+
+  updateCredit({required context})
+  async {
+    // await getCreditUserData(context: context);
+    emit(UpdateCreditLoadingState());
+    await FirebaseFirestore.instance
+        .collection(Constants.kUsersCollectionId)
+        .doc(creditUserDataModel[0].docId)
+        .update({
+      'start credit date':Timestamp.fromDate(startCreditDate),
+      'end credit date':Timestamp.fromDate(endCreditDate),
+      'current credit':int.parse(newCreditController.text),
+      'package size':int.parse(newCreditController.text)
+    }).
+    then((value) {
+      emit(UpdateCreditSuccessState());
+      searchUserEmailController.text=creditUserDataModel[0].email!;
+      newCreditController.text='';
+
+      getCreditUserData(context: context);
+      searchUserEmailController.clear();
+    })
+        .catchError((error){
+      emit(UpdateCreditErrorState());
+      print(error.toString());
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('something went wrong!!')));
+
+    });
+  }
  
 
   setCreditDate({required bool isStartTime,required DateTime tTime})
@@ -217,59 +269,7 @@ class ProfileCubit extends Cubit<ProfileState> {
           emit(ReciveAllUserDataErrorState());
     });
    }
-   getCreditUserData({required context})
-   async {
-    creditUserDataModel.clear();
-     emit(GetCreditUserDataLoadingState());
-     await FirebaseFirestore.instance
-         .collection(Constants.kUsersCollectionId).where('email' ,isEqualTo:searchUserEmailController.text)
-         .get()
-         .then((value) {
 
-             creditUserDataModel.add(UserDataModel.fromJson(snapshot: value.docs[0].data(), mainDocId: value.docs[0].id,));
-             currentCreditController!.text=creditUserDataModel[0].currentCredit!.toString();
-             startCreditController.text='${creditUserDataModel[0].startCreditDate!.toDate().year}/${creditUserDataModel[0].startCreditDate!.toDate().month}/${creditUserDataModel[0].startCreditDate!.toDate().day}';
-             endCreditController.text='${creditUserDataModel[0].endCreditDate!.toDate().year}/${creditUserDataModel[0].endCreditDate!.toDate().month}/${creditUserDataModel[0].endCreditDate!.toDate().day}';
-             emit(GetCreditUserDataSuccessState());
-     })
-         .catchError((error){
-       emit(GetCreditUserDataErrorState());
-       print(error);
-       if(error.toString()!='Null check operator used on a null value') {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('error has happened check the email might be in correct')));
-       }
-
-     });
-   }
-
-   updateCredit({required context})
-   async {
-    // await getCreditUserData(context: context);
-     emit(UpdateCreditLoadingState());
-    await FirebaseFirestore.instance
-         .collection(Constants.kUsersCollectionId)
-         .doc(creditUserDataModel[0].docId)
-         .update({
-       'start credit date':Timestamp.fromDate(startCreditDate),
-       'end credit date':Timestamp.fromDate(endCreditDate),
-       'current credit':int.parse(newCreditController.text)+userDataModel!.currentCredit!,
-      'package size':int.parse(newCreditController.text)+userDataModel!.currentCredit!
-     }).
-     then((value) {
-       emit(UpdateCreditSuccessState());
-       searchUserEmailController.text=creditUserDataModel[0].email!;
-       newCreditController.text='';
-
-          getCreditUserData(context: context);
-          searchUserEmailController.clear();
-     })
-         .catchError((error){
-           emit(UpdateCreditErrorState());
-           print(error.toString());
-           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('something went wrong!!')));
-
-     });
-   }
   incrementCredit({required int currentCredit1,required String docId})
   async {
    // await reciveAllUserData();

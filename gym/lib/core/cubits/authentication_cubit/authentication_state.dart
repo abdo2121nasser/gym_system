@@ -36,6 +36,10 @@ class RegistrationSaveDataErrorState extends AuthenticationState {}
 
 class ChangeCheckBoxValueState extends AuthenticationState {}
 
+class GetRegistrationCodesLoadingState extends AuthenticationState {}
+class GetRegistrationCodesSucssedState extends AuthenticationState {}
+class GetRegistrationCodesErrorState extends AuthenticationState {}
 
-
-
+class UpdateRegistrationCodesLoadingState extends AuthenticationState {}
+class UpdateRegistrationCodesSucssedState extends AuthenticationState {}
+class UpdateRegistrationCodesErrorState extends AuthenticationState {}

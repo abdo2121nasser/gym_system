@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: ProfileCubit.get(context)..reciveAllUserData(),
+      value: ProfileCubit.get(context)..creditDateValidation(context: context),
       child: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {},
         builder: (context, state) {

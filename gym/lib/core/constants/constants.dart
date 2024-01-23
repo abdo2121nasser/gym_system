@@ -4,6 +4,7 @@ class Constants
 {
   static String kUsersCollectionId='users data';
   static String kGymClassesCollectionId='gym classes';
+  static String kRegistrationCodeCollectionId='registration code';
   static String kGymClassesHistoryBookingCollectionId='gym classes history booking';
   static String kGymClassCustomerCollectionId='gym classes customers';
   static String kUserName='user name';

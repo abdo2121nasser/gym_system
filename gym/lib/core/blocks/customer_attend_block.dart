@@ -6,7 +6,8 @@ import 'package:gym/core/constants/constants.dart';
 class CustomerAttendBlock extends StatelessWidget {
   final String name;
   final String image;
-  final isAttended;
+  final bool isAttended;
+  final bool isClassPassed;
   final VoidCallback absentFunction,attendedFunction;
   CustomerAttendBlock({
     required this.name,
@@ -14,6 +15,7 @@ class CustomerAttendBlock extends StatelessWidget {
     required this.absentFunction,
     required this.attendedFunction,
     required this.isAttended,
+    required this.isClassPassed
   });
 
   @override
@@ -51,6 +53,7 @@ class CustomerAttendBlock extends StatelessWidget {
              ],
            ),
          ),
+             !isClassPassed?
              isAttended?
           Container(
             margin: EdgeInsets.symmetric(horizontal: 10),
@@ -71,7 +74,8 @@ class CustomerAttendBlock extends StatelessWidget {
                ),
                child: IconButton(onPressed:attendedFunction,
                    icon: Icon(Icons.check,color: Colors.green,)),
-             ),
+             ):
+             const SizedBox(),
         ],
       ),
     );

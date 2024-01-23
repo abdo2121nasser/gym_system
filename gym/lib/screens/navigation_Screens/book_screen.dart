@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,10 +10,10 @@ import 'package:gym/core/cubits/book_cubit/booking_cubit.dart';
 import 'package:gym/core/cubits/book_cubit/booking_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
-import 'package:gym/screens/class_customer_list_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/constants.dart';
+import '../other_screens/class_customer_list_screen.dart';
 
 
 class BookScreen extends StatelessWidget {
@@ -76,12 +78,31 @@ class BookScreen extends StatelessWidget {
                     itemBuilder:(context, index) =>
                         InkWell(
                           onTap: () async {
-          if (profCubit.userDataModel!.priority != '3')
+          if (profCubit.userDataModel!.priority =='2')
          {
+
            await bCubit.getClassCustomerList( mainDocId: bCubit.availableClassesModel[index].docId!);
-          Navigator.push(context, MaterialPageRoute(builder: (context) =>
-              ClassCustomerListScreen(
-                  mainDocId: bCubit.availableClassesModel[index].docId!),));
+           if(
+           bCubit.availableClassesModel[index].startDate!.toDate().year.toInt()>= DateTime.now().year.toInt()
+               &&  bCubit.availableClassesModel[index].startDate!.toDate().month.toInt()>= DateTime.now().month.toInt()
+               &&  bCubit.availableClassesModel[index].startDate!.toDate().day.toInt()>= DateTime.now().day.toInt()
+           )
+             {
+               Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                   ClassCustomerListScreen(
+                       mainDocId: bCubit.availableClassesModel[index].docId!,
+                     isClassPassed: false,
+                   ),));
+             }
+           else
+             {
+               Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                   ClassCustomerListScreen(
+                       mainDocId: bCubit.availableClassesModel[index].docId!,
+                   isClassPassed: true,
+                   ),));
+             }
+
         }
                           },
                       child: ClassContainerBlock(

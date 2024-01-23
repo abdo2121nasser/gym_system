@@ -4,7 +4,8 @@ import 'package:gym/core/bloc_observer/search_bar_block.dart';
 import 'package:gym/core/blocks/show_gif_block.dart';
 import 'package:gym/core/cubits/excercies_cubit/excercies_cubit.dart';
 import 'package:gym/core/cubits/excercies_cubit/excercies_cubit.dart';
-import 'package:gym/screens/detail_excercies_screen.dart';
+
+import '../other_screens/detail_excercies_screen.dart';
 
 
 class TabViewExcerciestScreen extends StatelessWidget {

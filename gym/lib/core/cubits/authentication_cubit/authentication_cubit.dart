@@ -23,6 +23,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   TextEditingController registerPassword=TextEditingController();
   TextEditingController registerConfirmPassword=TextEditingController();
   TextEditingController forgetPasswordEmail=TextEditingController();
+  TextEditingController registerCodeController=TextEditingController(text: '');
+  TextEditingController couchRegistrationCodeController=TextEditingController(text: '');
+  TextEditingController ownerRegistrationCodeController=TextEditingController(text: '');
+
   List<String> registerKind=['Customer','Couch','Owner'];
   List<String> registerPriority=['3','2','1'];
   int registerKindIndex=0;
@@ -109,6 +113,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
        {
          return 'password field is not equal confirmation password field';
        }
+     else if(registerCodeController.text=='' && registerKindIndex!=0)
+       {
+         return 'the registration code field is empty!';
+       }
      else
        {
         return 'true';
@@ -133,9 +141,23 @@ String loginValidation()
   Future<String> register()
   async {
     String massege= registerValidation().toString();
-   // print(massege);
     if(massege !='true') return massege;
     emit(RegisterLoadingState());
+   await getRegistrationCode();
+   if(registerKindIndex==1)
+     {
+       if(registerCodeController.text!=couchRegistrationCodeController.text)
+         {
+           return 'The Code Is Wrong';
+         }
+     }
+   else if(registerKindIndex==2)
+     {
+       if(registerCodeController.text!=ownerRegistrationCodeController.text)
+       {
+         return 'The Code Is Wrong';
+       }
+     }
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: registerEmail.text,
       password: registerPassword.text,
@@ -235,6 +257,42 @@ String loginValidation()
     return state is ForgetPasswordSucssedState?'true':'reset password failed';
   }
 
+  getRegistrationCode()
+  async {
+     emit(GetRegistrationCodesLoadingState());
+    await FirebaseFirestore.instance.collection(Constants.kRegistrationCodeCollectionId).doc('vDUPuKtnUpXzN297yJk1')
+        .get()
+        .then((value) {
+          couchRegistrationCodeController.text=value.data()!['couch code'];
+          ownerRegistrationCodeController.text=value.data()!['owner code'];
+          emit(GetRegistrationCodesSucssedState());
+    })
+        .catchError((error){
+          print(error);
+          emit(GetRegistrationCodesErrorState());
+    });
+
+  }
+  updateRegistrationCode({required context})
+  async {
+     emit(UpdateRegistrationCodesLoadingState());
+    await FirebaseFirestore.instance.collection(Constants.kRegistrationCodeCollectionId).doc('vDUPuKtnUpXzN297yJk1').update(
+      {
+            'couch code':couchRegistrationCodeController.text,
+            'owner code':ownerRegistrationCodeController.text
+      }
+    ).then((value) {
+      emit(UpdateRegistrationCodesSucssedState());
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Update Code Success')));
+    })
+        .catchError((error){
+      print(error);
+      emit(UpdateRegistrationCodesErrorState());
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(error.toString())));
+
+    });
+
+  }
 
 
 

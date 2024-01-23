@@ -18,12 +18,12 @@ class RegisterScreen extends StatelessWidget {
       listener: (context, state) {
       },
       builder: (context, state) {
-        var authData=AuthenticationCubit.get(context);
+        var authCubit=AuthenticationCubit.get(context);
         return Scaffold(
           body: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
             child: SizedBox(
-              height: 690,
+              height: 700,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -38,17 +38,19 @@ class RegisterScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: SizedBox(
-                      height: 320,
+                      height: 380,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Create Account',
                             style: TextStyle(fontSize: 25,color: Colors.blue),),
-                          GeneralTextFieldBlock(hint: 'Name', controller: authData.registerName,),
-                          GeneralTextFieldBlock(hint: 'Email', controller: authData.registerEmail,),
-                          GeneralTextFieldBlock(hint: 'Password', controller: authData.registerPassword,),
-                          GeneralTextFieldBlock(hint: 'Confirm Password', controller: authData.registerConfirmPassword,),
-            
+                          GeneralTextFieldBlock(hint: 'Name', controller: authCubit.registerName,),
+                          GeneralTextFieldBlock(hint: 'Email', controller: authCubit.registerEmail,),
+                          GeneralTextFieldBlock(hint: 'Password', controller: authCubit.registerPassword,),
+                          GeneralTextFieldBlock(hint: 'Confirm Password', controller: authCubit.registerConfirmPassword,),
+                          if(authCubit.registerKindIndex!=0)
+                            GeneralTextFieldBlock(hint: 'Code', controller: authCubit.registerCodeController),
+
                         ],
                       ),
                     ),
@@ -61,9 +63,9 @@ class RegisterScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Checkbox(value: authData.registerKindIndex==0?true:false,
+                            Checkbox(value: authCubit.registerKindIndex==0?true:false,
                               onChanged: (value){
-                                authData.changeCheckBoxValue(index: 0, value: value!);
+                                authCubit.changeCheckBoxValue(index: 0, value: value!);
                               },
                               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
@@ -75,9 +77,9 @@ class RegisterScreen extends StatelessWidget {
                         SizedBox(width: 10,),
                         Row(
                             children: [
-                              Checkbox(value: authData.registerKindIndex==1?true:false,
+                              Checkbox(value: authCubit.registerKindIndex==1?true:false,
                                 onChanged: (value){
-                                  authData.changeCheckBoxValue(index: 1, value: value!);
+                                  authCubit.changeCheckBoxValue(index: 1, value: value!);
                               },
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -92,10 +94,10 @@ class RegisterScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Checkbox(value: authData.registerKindIndex==2?true:false,
+                        Checkbox(value: authCubit.registerKindIndex==2?true:false,
                           onChanged: (value){
                           print(value);
-                          authData.changeCheckBoxValue(index: 2, value: value!);
+                          authCubit.changeCheckBoxValue(index: 2, value: value!);
                            },
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -106,12 +108,12 @@ class RegisterScreen extends StatelessWidget {
                       ,),
                   ],
                 ),
-            
+
                   Padding(
                     padding: const EdgeInsets.only(left: 40,right: 40,bottom: 10),
                     child: GeneralButtonBlock(lable: 'Sign Up',borderRadius: 20,
                         function: () async {
-                      var massage= await authData.register();
+                      var massage= await authCubit.register();
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: await massage=='true'?const Text('successful register')
                               : Text('${massage}'),
@@ -119,7 +121,7 @@ class RegisterScreen extends StatelessWidget {
                       print(massage);
                       if(await massage=='true')
                         {
-                          authData.changAuthScreenSwitch('Login');
+                          authCubit.changAuthScreenSwitch('Login');
                          Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => LoginScreen(),));
                         }
                         }, width: double.maxFinite,

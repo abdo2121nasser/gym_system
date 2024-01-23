@@ -5,11 +5,12 @@ import 'package:gym/core/cubits/navigation_cubit/navigation_cubit.dart';
 import 'package:gym/core/cubits/navigation_cubit/navigation_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
-import 'package:gym/screens/class_history_screen.dart';
-import 'package:gym/screens/add_credit_to_customer_screen.dart';
-import 'package:gym/screens/my_schedule_screen.dart';
+import 'package:gym/screens/other_screens/change_registration_code_screen.dart';
+import 'package:gym/screens/other_screens/my_schedule_screen.dart';
 import '../../screens/autentiaction_screens/forget_password.dart';
 import '../../screens/autentiaction_screens/login_screen.dart';
+import '../../screens/other_screens/add_credit_to_customer_screen.dart';
+import '../../screens/other_screens/class_history_screen.dart';
 import '../cubits/authentication_cubit/authentication_cubit.dart';
 
 
@@ -61,7 +62,7 @@ class DrawerBlock extends StatelessWidget {
                     style:const TextStyle(
                       color: Colors.white,fontSize:20,fontWeight: FontWeight.bold
                     ),),
-                ):CircularProgressIndicator(color: Colors.white,),
+                ):const CircularProgressIndicator(color: Colors.white,),
               ],
             ),const SizedBox(height: 5,),
              Row(
@@ -73,7 +74,7 @@ class DrawerBlock extends StatelessWidget {
                      style:const TextStyle(
                        color: Colors.white,fontSize:16,
                      ),),
-                 ):CircularProgressIndicator(color: Colors.white,),
+                 ):const CircularProgressIndicator(color: Colors.white,),
                ],
              ),
            ],
@@ -88,7 +89,7 @@ class DrawerBlock extends StatelessWidget {
               title: const Text('Class History',
               style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.bold),),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ClassHistoryScreen(),));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ClassHistoryScreen(),));
               },
             ),
             if(profCubit.userDataModel!.priority=='2')
@@ -101,7 +102,7 @@ class DrawerBlock extends StatelessWidget {
                       Icons.schedule_outlined,
                       color: Colors.grey,
                     ),
-                    title: const Text('My Schedule',
+                    title: const Text('My Daily Schedule',
                       style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.bold),),
                     onTap: () {
                       if(profCubit.userDataModel!= null) {
@@ -149,8 +150,22 @@ class DrawerBlock extends StatelessWidget {
                   title: const Text('Credit',
                     style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.bold),),
                   onTap: () async {
-
                     Navigator.push(context, MaterialPageRoute(builder: (context) => AddCreditToCustomerScreen(),));
+                  },
+                ),
+                const Divider(thickness: 2,endIndent: 20,indent: 20,),
+                ListTile(
+                  leading: const Icon(
+                    Icons.app_registration,
+                    color: Colors.indigo,
+                  ),
+                  title: const Text('Change Register Code',
+                    style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.bold),),
+                  onTap: () async {
+                      authCubit.getRegistrationCode();
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                        const ChangeRegistrationCodeScreen(),
+                    ));
                   },
                 ),
                 const Divider(thickness: 2,endIndent: 20,indent: 20,),
