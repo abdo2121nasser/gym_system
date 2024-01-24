@@ -61,7 +61,8 @@ class ProfileCubit extends Cubit<ProfileState> {
         .collection(Constants.kUsersCollectionId).where('email' ,isEqualTo:searchUserEmailController.text)
         .get()
         .then((value) {
-
+          print('-----------------------------------');
+         print(value.docs[0].data());
       creditUserDataModel.add(UserDataModel.fromJson(snapshot: value.docs[0].data(), mainDocId: value.docs[0].id,));
       currentCreditController!.text=creditUserDataModel[0].currentCredit!.toString();
       startCreditController.text='${creditUserDataModel[0].startCreditDate!.toDate().year}/${creditUserDataModel[0].startCreditDate!.toDate().month}/${creditUserDataModel[0].startCreditDate!.toDate().day}';
@@ -153,7 +154,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     name.text=userDataModel!.name!;
     phone.text=userDataModel!.phone!;
     address.text=userDataModel!.address!;
-    currentCreditController!.text=userDataModel!.currentCredit!.toString();
+   // currentCreditController!.text=userDataModel!.currentCredit!.toString();
        image=null;
        imagePath='';
     emit(SetControllersState());

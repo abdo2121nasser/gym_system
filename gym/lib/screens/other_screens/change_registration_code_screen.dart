@@ -13,7 +13,6 @@ class ChangeRegistrationCodeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthenticationCubit, AuthenticationState>(
       listener: (context, state) {
-        // TODO: implement listener
       },
       builder: (context, state) {
         var authCubit=AuthenticationCubit.get(context);

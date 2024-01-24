@@ -45,6 +45,7 @@ class ClassCustomerListScreen extends StatelessWidget {
                               image: bCubit.customerAttendList[index].imageUrl,
                               absentFunction: () {
                                 bCubit.setCustomerAbsent(
+                                  customerDocId: bCubit.customerAttendList[index].customerDocId,
                                     mainDocId: mainDocId,
                                     subDocId: bCubit.customerAttendList[index].docId,
                                 context: context);
@@ -72,7 +73,9 @@ class ClassCustomerListScreen extends StatelessWidget {
                              image: bCubit.customerAbsentList[index].imageUrl,
                              absentFunction: () {},
                              attendedFunction: () {
-                               bCubit.setCustomerAttended(mainDocId: mainDocId,
+                               bCubit.setCustomerAttended(
+                                   customerDocId: bCubit.customerAbsentList[index].customerDocId,
+                                   mainDocId: mainDocId,
                                    subDocId: bCubit.customerAbsentList[index].docId,
                                context: context );
                              },

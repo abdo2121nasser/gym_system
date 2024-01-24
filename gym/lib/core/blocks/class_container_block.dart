@@ -9,9 +9,10 @@ import 'package:intl/intl.dart';
 class ClassContainerBlock extends StatelessWidget {
   final  BookingClassesModel bookingModel;
  final Color primeColor,textColor,backgroundColor;
- final bool ownerAuthoize,isBookingState,isHistoryState,isClassPassed;
+ final bool ownerAuthoize,isBookingState,isHistoryState,isClassPassed,isBookScreen;
    final VoidCallback? ownerDeleteClass,booking,canceling;
   ClassContainerBlock({
+    this.isBookScreen=false,
     this.isClassPassed=false,
     this.isHistoryState=false,
     required this.canceling,
@@ -52,7 +53,7 @@ class ClassContainerBlock extends StatelessWidget {
               children: [
                 Text(bookingModel.className!,
                   style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color:primeColor),),
-               if(ownerAuthoize && !isClassPassed)
+               if(ownerAuthoize && !isClassPassed && isBookScreen)
                 IconButton(
                   onPressed: ownerDeleteClass,
                   icon: Icon(Icons.delete,color: Colors.red,),

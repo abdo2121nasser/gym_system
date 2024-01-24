@@ -4,8 +4,10 @@ class ClassCustomerModel
   final bool attended;
   final String docId;
   final String imageUrl;
+  final String customerDocId;
 
   ClassCustomerModel({
+    required this.customerDocId,
     required this.name,
     required this.attended,
     required this.docId,
@@ -17,7 +19,8 @@ class ClassCustomerModel
         name: json['user name'],
     attended: json['attended'],
      imageUrl: json['image url'] ,
-      docId: docId
+      docId: docId,
+      customerDocId: json['customer doc id']
     );
   }
 }

@@ -34,7 +34,7 @@ class BookScreen extends StatelessWidget {
         var bCubit = BookingCubit.get(context);
 
         bool isBooked({required String classId}) {
-          for (int i = 0; i < bCubit.historyClasses!.length; i++) {
+          for (int i = 0; i < bCubit.historyClasses.length; i++) {
             if (bCubit.historyClasses[i].subDocId.contains(classId)) {
               return true;
             }
@@ -191,7 +191,8 @@ class BookScreen extends StatelessWidget {
                                  else if(bCubit.availableClassesModel[index].startDate!.toDate().day.toInt()> DateTime.now().day.toInt())
                                  {
                                    await    bCubit.bookClass(context: context,
-                                       classDocId: bCubit.availableClassesModel[index].docId!, object: profCubit!.userDataModel!
+                                       classDocId: bCubit.availableClassesModel[index].docId!,
+                                       object: profCubit!.userDataModel!
                                        ,historyDocId:  profCubit.userDataModel!.docId!,
                                        historyObject: bCubit.availableClassesModel[index]);
                                  bCubit.getAllAvailableClass();
@@ -221,6 +222,7 @@ class BookScreen extends StatelessWidget {
                           },
                           isBookingState: !isBooked(classId: bCubit.availableClassesModel[index].docId!),
                           bookingModel: bCubit.availableClassesModel[index],
+                        isBookScreen: true,
                           primeColor: Constants.kBlueColor,
                           textColor: Colors.grey.shade700,
                           backgroundColor: Colors.white,

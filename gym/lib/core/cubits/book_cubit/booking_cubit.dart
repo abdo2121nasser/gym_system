@@ -83,7 +83,7 @@ class BookingCubit extends Cubit<BookingState> {
     await  data.add({
       'class name':className.text,
       'couch name':classCouchName.text,
-      'max customer number':  int.parse(classMaxCustomer.text),
+      'max customer number': classMaxCustomer.text==''? int.parse(classMaxCustomer.text):30,
       'start date':Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day)),
       'start time hour':classStartTime!.hour,
       'start time minute':classStartTime!.minute,
@@ -134,10 +134,9 @@ class BookingCubit extends Cubit<BookingState> {
     async {
       emit(DeleteGymClassLoadingState());
    await returnAllCredits(classDocIc: docId,context: context);
-    await  FirebaseFirestore.instance
+   await  FirebaseFirestore.instance
           .collection(Constants.kGymClassesCollectionId)
-          .doc(docId)
-          .delete()
+          .doc(docId).delete()
           .then((value) async {
         emit(DeleteGymClassSuccessState());
        await getAllAvailableClass();
@@ -311,7 +310,7 @@ class BookingCubit extends Cubit<BookingState> {
       'user priority':object.priority,
       'attended':true,
     'image url': ProfileCubit.get(context).userDataModel!.imageUrl,
-
+     'customer doc id':object.docId,
     })
         .then((value) async {
       await addGymClassToHistory(userDocId:historyDocId , object:historyObject,context: context);
@@ -450,7 +449,7 @@ class BookingCubit extends Cubit<BookingState> {
   });
      }
 
-     setCustomerAbsent({required String mainDocId,required String subDocId,required context})
+     setCustomerAbsent({required String mainDocId,required String subDocId,required context,required String customerDocId})
      async {
        emit(SetCustomerAbsentLoadingState());
        await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(mainDocId).collection(Constants.kGymClassCustomerCollectionId).doc(subDocId)
@@ -458,7 +457,7 @@ class BookingCubit extends Cubit<BookingState> {
          'attended':false
        })
            .then((value) async {
-         setCustomerAbsentInHistory(context: context,subDocId: subDocId,mainDocId: mainDocId);
+         setCustomerAbsentInHistory(context: context,subDocId: subDocId,mainDocId: mainDocId,customerDocId: customerDocId);
             await getClassCustomerList(mainDocId: mainDocId);
          emit(SetCustomerAbsentSucssedState());
        })
@@ -468,14 +467,16 @@ class BookingCubit extends Cubit<BookingState> {
        });
 
      }
-  setCustomerAbsentInHistory({required String subDocId,required context,required String mainDocId})
+  setCustomerAbsentInHistory({required String subDocId,required context,required String mainDocId,required String customerDocId})
   async {
     emit(SetCustomerAbsentInHistoryLoadingState());
-    String historySubDocId=await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
+    String historySubDocId=await FirebaseFirestore.instance
+        .collection(Constants.kUsersCollectionId).doc(customerDocId)
+        .collection(Constants.kGymClassesHistoryBookingCollectionId)
         .where('document id',isEqualTo: mainDocId).get().then((value){
           return value.docs[0].id;
     });
-    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId)
+    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(customerDocId)
         .collection(Constants.kGymClassesHistoryBookingCollectionId).doc(historySubDocId)
         .update({
       'attended':false
@@ -490,7 +491,7 @@ class BookingCubit extends Cubit<BookingState> {
 
   }
 
-  setCustomerAttended({required String mainDocId,required String subDocId,required context})
+  setCustomerAttended({required String mainDocId,required String subDocId,required context,required String customerDocId})
   async {
     emit(SetCustomerAttendedLoadingState());
     await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(mainDocId).collection(Constants.kGymClassCustomerCollectionId).doc(subDocId)
@@ -498,7 +499,7 @@ class BookingCubit extends Cubit<BookingState> {
       'attended':true
     })
         .then((value) async {
-      setCustomerAttendedInHistory(context: context,subDocId: subDocId,mainDocId: mainDocId );
+      setCustomerAttendedInHistory(context: context,subDocId: subDocId,mainDocId: mainDocId,customerDocId: customerDocId );
       await getClassCustomerList(mainDocId: mainDocId);
       emit(SetCustomerAttendedSucssedState());
     })
@@ -509,14 +510,14 @@ class BookingCubit extends Cubit<BookingState> {
 
   }
 
-  setCustomerAttendedInHistory({required String subDocId,required context,required String mainDocId})
+  setCustomerAttendedInHistory({required String subDocId,required context,required String mainDocId,required String customerDocId})
   async {
     emit(SetCustomerAttendedInHistoryLoadingState());
     String historySubDocId=await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
         .where('document id',isEqualTo: mainDocId).get().then((value){
       return value.docs[0].id;
     });
-    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId)
+    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(customerDocId)
         .collection(Constants.kGymClassesHistoryBookingCollectionId).doc(historySubDocId)
         .update({
       'attended':true

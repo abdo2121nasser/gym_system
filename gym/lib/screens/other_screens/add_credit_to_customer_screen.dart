@@ -87,7 +87,7 @@ class _AddCreditToCustomerScreenState extends State<AddCreditToCustomerScreen> {
                   ),
 
                   ),
-                  Text(profCubit.userDataModel!.name!,
+                  Text(profCubit.creditUserDataModel[0].name!,
                   style: const TextStyle(fontSize: 30),),
                                  const SizedBox(height: 10,),
                   GeneralTextFieldBlock(hint: 'current credit', controller: profCubit.currentCreditController!,canEdit: false,),

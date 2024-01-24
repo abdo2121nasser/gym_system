@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym/core/blocks/class_container_block.dart';
 import 'package:gym/core/cubits/book_cubit/booking_cubit.dart';
-import 'package:gym/core/cubits/book_cubit/booking_cubit.dart';
 import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/core/models/firebase_models/booking_data_data_model.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import '../../core/constants/constants.dart';
 
@@ -29,15 +29,15 @@ class _ClassHistoryScreenState extends State<ClassHistoryScreen> {
 
         bool isClassPassed({required int index}) {
           if(
-          bCubit.availableClassesModel[index].startDate!.toDate().year.toInt()<= DateTime.now().year.toInt()
-              &&  bCubit.availableClassesModel[index].startDate!.toDate().month.toInt()<= DateTime.now().month.toInt()
-              &&  bCubit.availableClassesModel[index].startDate!.toDate().day.toInt()< DateTime.now().day.toInt()
+          bCubit.historyClasses[index].startDate.toDate().year.toInt()<= DateTime.now().year.toInt()
+              &&  bCubit.historyClasses[index].startDate.toDate().month.toInt()<= DateTime.now().month.toInt()
+              &&  bCubit.historyClasses[index].startDate.toDate().day.toInt()< DateTime.now().day.toInt()
           )
           {
             return true;
           }
-          else if(bCubit.availableClassesModel[index].startDate!.toDate().day.toInt()== DateTime.now().day.toInt()
-              && bCubit.availableClassesModel[index].startTimeHour!.toInt()<= int.parse(DateFormat('HH').format(DateTime.now()).toString()))
+          else if(bCubit.historyClasses[index].startDate.toDate().day.toInt()== DateTime.now().day.toInt()
+              && bCubit.historyClasses[index].startTimeHour.toInt()<= int.parse(DateFormat('HH').format(DateTime.now()).toString()))
           {
             return true;
           }
@@ -60,7 +60,7 @@ class _ClassHistoryScreenState extends State<ClassHistoryScreen> {
                     physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
                       itemBuilder: (context, index) => ClassContainerBlock(
-                        isClassPassed: isClassPassed(index: index),
+                        //isClassPassed: /*isClassPassed(index: index)*/ true,
                           canceling: (){},
                           booking: (){},
                           isBookingState: false,
@@ -72,11 +72,11 @@ class _ClassHistoryScreenState extends State<ClassHistoryScreen> {
                         backgroundColor:  bCubit.historyClasses[index].isAttended?Colors.white:Colors.red.shade100,
                         isHistoryState: true,
                         ownerDeleteClass: (){
-                          bCubit.deleteGymClass(docId: bCubit.historyClasses[index].subDocId,context: context);
-                         bCubit.cancelClassGymFromHistory(mainDocId: ProfileCubit.get(context).userDataModel!.docId!,
-                             subDocId: bCubit.historyClasses[index].currentSubDocId, context: context);
-                         setState(() {
-                         });
+                         //  bCubit.deleteGymClass(docId: bCubit.historyClasses[index].subDocId,context: context);
+                         // bCubit.cancelClassGymFromHistory(mainDocId: ProfileCubit.get(context).userDataModel!.docId!,
+                         //     subDocId: bCubit.historyClasses[index].currentSubDocId, context: context);
+                         // setState(() {
+                         // });
                         },
                         ownerAuthoize: ProfileCubit.get(context).userDataModel!.priority=='1'?true:false,
                       ),

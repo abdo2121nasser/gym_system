@@ -106,7 +106,7 @@ class NavigationScreen extends StatelessWidget {
                 FloatingActionButton(
                   backgroundColor: Colors.indigo.shade400,
                   onPressed: () {
-                    if(bCubit.selectedDay.isAfter(DateTime.now()) || true) {
+                    if(bCubit.selectedDay.isAfter(DateTime.now())) {
                       bCubit.showDialogBox(context: context);
                       // todo remove the or in condition
                     } else

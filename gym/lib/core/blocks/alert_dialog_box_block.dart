@@ -50,7 +50,14 @@ class AlertDialogBoxBlock extends StatelessWidget {
                     const SizedBox(width: 5,),
                     const Text('Start Time :',
                       style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                    Text(BookingCubit.get(context).classStartTime!.format(context),
+                    BookingCubit.get(context).classStartTime!=null?
+                    Text(
+                      BookingCubit.get(context).classStartTime!.format(context)
+                      ,
+                      style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),):
+                    Text(
+                      TimeOfDay.now()!.format(context)
+                      ,
                       style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),)
                   ],
                 ),

@@ -80,6 +80,7 @@ class HomeScreen extends StatelessWidget {
                             padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
                               itemBuilder:(context, index) =>
                                   ClassContainerBlock(
+                                    isBookScreen: false,
                                     canceling: (){},
                                     booking: (){},
                                     isBookingState: false,
@@ -91,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                                     backgroundColor: Colors.white,
                                     isHistoryState: true,
                                     ownerDeleteClass: () async {
-                                      await  bCubit.deleteGymClass(docId:bCubit.availableClassesModel[index].docId!,context: context);
+                                     // await  bCubit.deleteGymClass(docId:bCubit.availableClassesModel[index].docId!,context: context);
                                     },
                                     ownerAuthoize: ProfileCubit.get(context).userDataModel!.priority=='1'?true:false,
                                   ),
