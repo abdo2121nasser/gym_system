@@ -233,7 +233,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       Constants.kUserImageUrl:imagePath.toString()
     }
     )
-        .then((value) {
+        .then((value) async {
+         await reciveAllUserData();
           emit(UpdateProfileSuccessState());
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Success Update')));
 

@@ -490,6 +490,29 @@ class BookingCubit extends Cubit<BookingState> {
     });
 
   }
+  setCustomerAttendedInHistory({required String subDocId,required context,required String mainDocId,required String customerDocId})
+  async {
+
+    emit(SetCustomerAttendedInHistoryLoadingState());
+    String historySubDocId=await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(customerDocId)
+        .collection(Constants.kGymClassesHistoryBookingCollectionId)
+        .where('document id',isEqualTo: mainDocId).get().then((value){
+      return value.docs[0].id;
+    });
+    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(customerDocId)
+        .collection(Constants.kGymClassesHistoryBookingCollectionId).doc(historySubDocId)
+        .update({
+      'attended':true
+    })
+        .then((value) async {
+      emit(SetCustomerAttendedInHistorySucssedState());
+    })
+        .catchError((error){
+      emit(SetCustomerAttendedInHistoryErrorState());
+      print(error);
+    });
+
+  }
 
   setCustomerAttended({required String mainDocId,required String subDocId,required context,required String customerDocId})
   async {
@@ -510,27 +533,7 @@ class BookingCubit extends Cubit<BookingState> {
 
   }
 
-  setCustomerAttendedInHistory({required String subDocId,required context,required String mainDocId,required String customerDocId})
-  async {
-    emit(SetCustomerAttendedInHistoryLoadingState());
-    String historySubDocId=await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
-        .where('document id',isEqualTo: mainDocId).get().then((value){
-      return value.docs[0].id;
-    });
-    await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(customerDocId)
-        .collection(Constants.kGymClassesHistoryBookingCollectionId).doc(historySubDocId)
-        .update({
-      'attended':true
-    })
-        .then((value) async {
-      emit(SetCustomerAttendedInHistorySucssedState());
-    })
-        .catchError((error){
-      emit(SetCustomerAttendedInHistoryErrorState());
-      print(error);
-    });
 
-  }
 
 
 
