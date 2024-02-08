@@ -31,7 +31,7 @@ class CustomerAttendBlock extends StatelessWidget {
         children: [
         image!=null|| image.isNotEmpty?
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             width: 50,height: 50,
             decoration: BoxDecoration(
               border: Border.all(width: 2,color: Colors.white),
@@ -49,31 +49,31 @@ class CustomerAttendBlock extends StatelessWidget {
              children: [
                Expanded(
                    child: Text(name,
-                   style: TextStyle(fontSize: 20),))
+                   style: const TextStyle(fontSize: 20),))
              ],
            ),
          ),
              !isClassPassed?
              isAttended?
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             width: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white
             ),
             child: IconButton(onPressed:absentFunction,
-                icon: Icon(Icons.close,color: Colors.red,)),
+                icon: const Icon(Icons.close,color: Colors.red,)),
           ):
              Container(
-               margin: EdgeInsets.symmetric(horizontal: 10),
+               margin: const EdgeInsets.symmetric(horizontal: 10),
                width: 40,
-               decoration: BoxDecoration(
+               decoration: const BoxDecoration(
                    shape: BoxShape.circle,
                    color: Colors.white
                ),
                child: IconButton(onPressed:attendedFunction,
-                   icon: Icon(Icons.check,color: Colors.green,)),
+                   icon: const Icon(Icons.check,color: Colors.green,)),
              ):
              const SizedBox(),
         ],

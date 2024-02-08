@@ -19,7 +19,7 @@ class ForgetPasswordScreen extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: Colors.blue,
             centerTitle: true,
-            title: Text('reset password',
+            title: const Text('reset password',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
           ),
 
@@ -29,7 +29,7 @@ class ForgetPasswordScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('enter your email',
+                  const Text('enter your email',
                     style: TextStyle(fontSize: 20),),
                  const  SizedBox(height: 20,),
                   GeneralTextFieldBlock(

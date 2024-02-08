@@ -10,8 +10,11 @@ class ClassContainerBlock extends StatelessWidget {
   final  BookingClassesModel bookingModel;
  final Color primeColor,textColor,backgroundColor;
  final bool ownerAuthoize,isBookingState,isHistoryState,isClassPassed,isBookScreen;
+ final bool classInProgress,classInDeleting;
    final VoidCallback? ownerDeleteClass,booking,canceling;
   ClassContainerBlock({
+    this.classInProgress=false,
+    this.classInDeleting=false,
     this.isBookScreen=false,
     this.isClassPassed=false,
     this.isHistoryState=false,
@@ -40,7 +43,7 @@ class ClassContainerBlock extends StatelessWidget {
         borderRadius: BorderRadius.circular(10)
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
         child: Column(
 
           mainAxisAlignment: !ownerAuthoize || isHistoryState ||ownerAuthoize?
@@ -54,19 +57,20 @@ class ClassContainerBlock extends StatelessWidget {
                 Text(bookingModel.className!,
                   style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color:primeColor),),
                if(ownerAuthoize && !isClassPassed && isBookScreen)
+              classInDeleting==true?const CircularProgressIndicator(color: Colors.blue,):
                 IconButton(
                   onPressed: ownerDeleteClass,
-                  icon: Icon(Icons.delete,color: Colors.red,),
+                  icon: const Icon(Icons.delete,color: Colors.red,),
                 iconSize: 25),
 
               ],
             ),
            if(!ownerAuthoize)
-           SizedBox(height: 10,),
+           const SizedBox(height: 10,),
             Row(
               children: [
                 Icon(Icons.access_time_rounded,color: Constants.kBlueColor,),
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
                 Expanded(
                   child: Text('${DateFormat('EEEE').format(bookingModel.startDate!.toDate())} '
                       '${bookingModel.startDate!.toDate().day.toString()} '
@@ -76,22 +80,24 @@ class ClassContainerBlock extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 5,),
+            const SizedBox(height: 5,),
             Row(
               children: [
                 Icon(Icons.person,color: Constants.kBlueColor,),
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
                 Text(bookingModel.couchName!,
                   style: TextStyle(fontSize: 16,color: textColor),),
               ],
             ),
             isHistoryState || isClassPassed?
-            SizedBox()
+            const SizedBox()
             : Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('${bookingModel.maxCustomerNumber!.toInt()-bookingModel.customerNumber!} places left',
-                  style: TextStyle(fontSize: 16,color: Colors.red),),
+                  style: const TextStyle(fontSize: 16,color: Colors.red),),
+               classInProgress?
+               const CircularProgressIndicator(color: Colors.blue,):
                 GeneralButtonBlock(
                     lable:isBookingState? 'Book':'cancel', function:isBookingState? booking!:canceling!,
                     width: double.infinity, hight: 0,

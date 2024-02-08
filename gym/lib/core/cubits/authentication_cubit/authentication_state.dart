@@ -4,6 +4,9 @@ part of 'authentication_cubit.dart';
 abstract class AuthenticationState {}
 
 class AuthenticationInitial extends AuthenticationState {}
+
+class ClearControllersState extends AuthenticationState {}
+
 class ChangeToLogInScreenState extends AuthenticationState {}
 class ChangeToSignUpScreenState extends AuthenticationState {}
 

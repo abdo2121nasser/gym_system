@@ -4,6 +4,7 @@ part of 'booking_cubit.dart';
 abstract class BookingState {}
 
 class BookingInitial extends BookingState {}
+class ChangeClassBookingLoading extends BookingState {}
 class ChangeSelectedDayState extends BookingState {}
 class ChangeSelectedClassStartTimeState extends BookingState {}
 
@@ -78,3 +79,10 @@ class SetCustomerAbsentInHistoryErrorState extends  BookingState  {}
 class SetCustomerAttendedInHistoryLoadingState extends  BookingState  {}
 class SetCustomerAttendedInHistorySucssedState extends  BookingState  {}
 class SetCustomerAttendedInHistoryErrorState extends  BookingState  {}
+
+class CancelAllClassesHistoryLoadingState extends  BookingState  {}
+class CancelAllClassesHistorySucssedState extends  BookingState  {}
+class CancelAllClassesHistoryErrorState extends  BookingState  {}
+
+class InitialFunctionCreditValidationState extends BookingState {}
+class InitialFunctionRecentBookedClassState extends BookingState {}

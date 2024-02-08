@@ -22,13 +22,13 @@ class ClassCustomerListScreen extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: Colors.blue,
             centerTitle: true,
-            title: Text('Customer List',
+            title: const Text('Customer List',
               style: TextStyle(
                   fontSize: 30, fontWeight: FontWeight.bold
               ),),
             leading: IconButton(onPressed: () {
               Navigator.pop(context);
-            }, icon: Icon(Icons.arrow_back, size: 30,)),
+            }, icon: const Icon(Icons.arrow_back, size: 30,)),
           ),
           body: Padding(
             padding: const EdgeInsets.all(10),
@@ -56,7 +56,7 @@ class ClassCustomerListScreen extends StatelessWidget {
 
                           },
                         separatorBuilder: (context, index) =>
-                            SizedBox(height: 10,),
+                            const SizedBox(height: 10,),
                         itemCount:bCubit.customerAttendList.length
                     ),
                   ),
@@ -83,7 +83,7 @@ class ClassCustomerListScreen extends StatelessWidget {
                            );
                          }
                           ,separatorBuilder: (context, index) =>
-                            SizedBox(height: 10,),
+                            const SizedBox(height: 10,),
                         itemCount: bCubit.customerAbsentList.length),
                   ),
                 ),

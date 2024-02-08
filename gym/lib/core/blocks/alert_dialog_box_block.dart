@@ -24,6 +24,7 @@ class AlertDialogBoxBlock extends StatelessWidget {
   listener: (context, state) {
   },
   builder: (context, state) {
+    var bCubit=BookingCubit.get(context);
     return SingleChildScrollView(
       child: AlertDialog(
         insetPadding: const EdgeInsets.symmetric(vertical: 80,horizontal: 30),
@@ -56,7 +57,7 @@ class AlertDialogBoxBlock extends StatelessWidget {
                       ,
                       style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),):
                     Text(
-                      TimeOfDay.now()!.format(context)
+                      TimeOfDay.now().format(context)
                       ,
                       style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),)
                   ],
@@ -69,6 +70,7 @@ class AlertDialogBoxBlock extends StatelessWidget {
             const SizedBox(height: 10,),
             GeneralTextFieldBlock(hint:'max customer number', controller:classMaxCustomerNumber,onlyInteger: true, ),
             const SizedBox(height: 20,),
+            bCubit.addClassProgress?const CircularProgressIndicator(color: Colors.blue,):
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

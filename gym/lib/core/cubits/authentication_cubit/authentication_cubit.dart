@@ -57,6 +57,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
      registerEmail.clear();
      registerPassword.clear();
      registerConfirmPassword.clear();
+     emit(ClearControllersState());
    }
  String nameValidation(String name)
   {
@@ -165,14 +166,14 @@ String loginValidation()
     async {
      await registerationSaveData();
       clearControllers();
-
       emit(RegisterSucssedState());
     }).catchError((error)
     {
+      clearControllers();
       emit(RegisterErrorState());
       print(error);
     });
-    clearControllers();
+
     return state is RegisterSucssedState ? 'true' : 'registration failed';
   }
 
@@ -214,15 +215,15 @@ String loginValidation()
       password: loginPassword.text,
     ).then((value)
     {
-      ProfileCubit.get(context).reciveAllUserData();
-      ExcerciesCubit.get(context).getAllExcercies();
+      clearControllers();
       emit(LoginSucssedState());
     }).catchError((error)
     {
+      clearControllers();
       emit(LoginErrorState());
       print(error);
     });
-     clearControllers();
+
      return state is LoginSucssedState ? 'true' : 'wrong email or password';
   }
 
@@ -231,13 +232,15 @@ String loginValidation()
     emit(LogoutLoadingState());
     await FirebaseAuth.instance.signOut().
     then((value) {
+      emit(LogoutErrorState());
       ProfileCubit.get(context).userDataModel=null;
       emit(LogoutSucssedState());
     }).catchError((error){
-      emit(LogoutErrorState());
+      clearControllers();
       print(error);
+      emit(LogoutErrorState());
     });
-    clearControllers();
+
     return state is LogoutSucssedState?'true':'log out failed';
   }
 

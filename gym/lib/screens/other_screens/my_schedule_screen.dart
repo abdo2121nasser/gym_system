@@ -33,7 +33,7 @@ MyScheduleScreen({required this.couchName});
                   appBar: AppBar(
                     backgroundColor: Colors.blue,
                     centerTitle: true,
-                    title: Text('My Schedule',
+                    title: const Text('My Schedule',
                       style: TextStyle(
                           fontSize: 25, fontWeight: FontWeight.bold),),
                   ),
@@ -41,8 +41,8 @@ MyScheduleScreen({required this.couchName});
                     children: [
                       Expanded(
                         child: ListView.separated(
-                            physics: BouncingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
                             itemBuilder: (context, index) =>
                                 ClassContainerBlock(

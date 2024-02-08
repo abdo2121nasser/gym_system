@@ -19,7 +19,7 @@ class CalenderBlock extends StatelessWidget {
         return TableCalendar(
          currentDay: bCubit.selectedDay,
           onDaySelected: (selectedDay, focusedDay) {
-            bCubit.changeSelectedDay(selectedDay,);
+            bCubit.changeSelectedDay(selectedDay,context);
           },
           selectedDayPredicate: (day) {
             // Use this to determine if a day is selected
@@ -29,17 +29,17 @@ class CalenderBlock extends StatelessWidget {
 
             formatButtonVisible: false,
             titleCentered: true,
-            leftChevronIcon: Icon(Icons.chevron_left),
-            rightChevronIcon: Icon(Icons.chevron_right),
-            titleTextStyle: TextStyle(fontSize: 18),
-            headerPadding: EdgeInsets.all(0),
-            headerMargin: EdgeInsets.all(0),
+            leftChevronIcon: const Icon(Icons.chevron_left),
+            rightChevronIcon: const Icon(Icons.chevron_right),
+            titleTextStyle: const TextStyle(fontSize: 18),
+            headerPadding: const EdgeInsets.all(0),
+            headerMargin: const EdgeInsets.all(0),
             titleTextFormatter: (date, locale) =>
                 DateFormat.MMMM().format(date),
           ),
           calendarFormat: CalendarFormat.week,
-          firstDay: DateTime.now().subtract(Duration(days: 21)),
-          lastDay: DateTime.now().add(Duration(days: 25)),
+          firstDay: DateTime.now().subtract(const Duration(days: 21)),
+          lastDay: DateTime.now().add(const Duration(days: 25)),
           focusedDay:bCubit.selectedDay,
 
 

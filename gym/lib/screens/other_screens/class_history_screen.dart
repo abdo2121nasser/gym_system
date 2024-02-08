@@ -26,24 +26,6 @@ class _ClassHistoryScreenState extends State<ClassHistoryScreen> {
       },
       builder: (context, state) {
         var bCubit=BookingCubit.get(context);
-
-        bool isClassPassed({required int index}) {
-          if(
-          bCubit.historyClasses[index].startDate.toDate().year.toInt()<= DateTime.now().year.toInt()
-              &&  bCubit.historyClasses[index].startDate.toDate().month.toInt()<= DateTime.now().month.toInt()
-              &&  bCubit.historyClasses[index].startDate.toDate().day.toInt()< DateTime.now().day.toInt()
-          )
-          {
-            return true;
-          }
-          else if(bCubit.historyClasses[index].startDate.toDate().day.toInt()== DateTime.now().day.toInt()
-              && bCubit.historyClasses[index].startTimeHour.toInt()<= int.parse(DateFormat('HH').format(DateTime.now()).toString()))
-          {
-            return true;
-          }
-
-          return false;
-        }
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.blue,

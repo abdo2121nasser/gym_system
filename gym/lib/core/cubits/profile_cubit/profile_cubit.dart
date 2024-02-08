@@ -32,10 +32,14 @@ class ProfileCubit extends Cubit<ProfileState> {
      List<UserDataModel> creditUserDataModel=[];
   File? image;
   String imagePath='';
+
+
   creditDateValidation({required context})
   async {
-   await reciveAllUserData();
-    if(userDataModel!=null)
+   //await reciveAllUserData();
+    //todo has been editet
+    //print(use)
+  //  if(userDataModel!=null)
       {
         if(userDataModel!.endCreditDate!.toDate().isBefore(DateTime.now()) && userDataModel!.currentCredit!.toInt()!=0)
         {
@@ -47,9 +51,15 @@ class ProfileCubit extends Cubit<ProfileState> {
           emit(CreditDateValidationState());
           await getCreditUserData(context: context);
           await updateCredit(context: context);
-
+          await reciveAllUserData();
         }
       }
+    // else
+    //   {
+    //     print('looooooop');
+    //    await reciveAllUserData();
+    //    creditDateValidation(context: context);
+    //   }
 
   }
 
@@ -61,8 +71,6 @@ class ProfileCubit extends Cubit<ProfileState> {
         .collection(Constants.kUsersCollectionId).where('email' ,isEqualTo:searchUserEmailController.text)
         .get()
         .then((value) {
-          print('-----------------------------------');
-         print(value.docs[0].data());
       creditUserDataModel.add(UserDataModel.fromJson(snapshot: value.docs[0].data(), mainDocId: value.docs[0].id,));
       currentCreditController!.text=creditUserDataModel[0].currentCredit!.toString();
       startCreditController.text='${creditUserDataModel[0].startCreditDate!.toDate().year}/${creditUserDataModel[0].startCreditDate!.toDate().month}/${creditUserDataModel[0].startCreditDate!.toDate().day}';
@@ -149,7 +157,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
    setControllers()
-  async {
+   {
      email.text=userDataModel!.email!;
     name.text=userDataModel!.name!;
     phone.text=userDataModel!.phone!;
@@ -282,7 +290,8 @@ class ProfileCubit extends Cubit<ProfileState> {
         .update({
       'current credit':/*userDataModel!.currentCredit!+1*/currentCredit1
     }).
-    then((value) {
+    then((value) async {
+     await reciveAllUserData();
       emit(IncrementCreditSuccessState());
     })
         .catchError((error){
@@ -293,16 +302,18 @@ class ProfileCubit extends Cubit<ProfileState> {
     });
   }
 
-  decrementCredit()
+  decrementCredit({required int currentCredit1,required String docId})
   async{
+  // await reciveAllUserData();
 emit(DecrementCreditLoadingState());
    await FirebaseFirestore.instance
         .collection(Constants.kUsersCollectionId)
-        .doc(userDataModel!.docId)
+        .doc(docId)
         .update({
-      'current credit':await userDataModel!.currentCredit!-1
+      'current credit':/*await userDataModel!.currentCredit!-1*/currentCredit1
         }).
-    then((value) {
+    then((value) async {
+      await reciveAllUserData();
       emit(DecrementCreditSuccessState());
     })
         .catchError((error){

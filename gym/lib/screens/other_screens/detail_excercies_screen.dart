@@ -26,10 +26,10 @@ class DetailExcerciesScreen extends StatelessWidget {
         backgroundColor: Colors.blue,
         leading: IconButton(onPressed: (){
           Navigator.pop(context);
-        },icon: Icon(Icons.arrow_back,color: Colors.white,size: 30,),),
+        },icon: const Icon(Icons.arrow_back,color: Colors.white,size: 30,),),
       ),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Container(
           height: 600,
           child: Column(
@@ -47,7 +47,7 @@ class DetailExcerciesScreen extends StatelessWidget {
                               if (loadingProgress == null) {
                                 return child;
                               } else {
-                                return Center(
+                                return const Center(
                                   child: CircularProgressIndicator(color: Colors.blue,),
                                 );
                               }
@@ -64,7 +64,7 @@ class DetailExcerciesScreen extends StatelessWidget {
                      children: [
                        Expanded(
                          child: Text("BodyPart: ${excercie.bodyPart!}",
-                           style: TextStyle(fontSize: 30),),
+                           style: const TextStyle(fontSize: 30),),
                        ),
                      ],
                    ),
@@ -72,7 +72,7 @@ class DetailExcerciesScreen extends StatelessWidget {
                      children: [
                        Expanded(
                          child: Text("Target: ${excercie.target!}",
-                           style: TextStyle(fontSize: 30),),
+                           style: const TextStyle(fontSize: 30),),
                        ),
                      ],
                    ),
@@ -80,24 +80,24 @@ class DetailExcerciesScreen extends StatelessWidget {
                      children: [
                        Expanded(
                          child: Text("Equipment: ${excercie.equipment}",
-                           style: TextStyle(fontSize: 30),),
+                           style: const TextStyle(fontSize: 30),),
                        ),
                      ],
                    ),
                  ],
                ),
              ),
-              Center(
+              const Center(
                 child: Text("the Instructions",
                   style: TextStyle(fontSize: 35,fontWeight: FontWeight.bold),),
               ),
               Expanded(
                 child: ListView.separated(
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                     itemBuilder: (context, index) => Text("${index+1}- ${excercie.instructions![index]}",
-                    style: TextStyle(fontSize: 25),),
-                    separatorBuilder: (context, index) => SizedBox(height: 10,),
+                    style: const TextStyle(fontSize: 25),),
+                    separatorBuilder: (context, index) => const SizedBox(height: 10,),
                     itemCount: excercie.instructions!.length!),
               )
             ],

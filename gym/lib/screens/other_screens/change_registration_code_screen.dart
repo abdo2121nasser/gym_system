@@ -42,15 +42,15 @@ class ChangeRegistrationCodeScreen extends StatelessWidget {
                    textColor: Colors.white, backgroundColor: Colors.blue,
                    borderRadius:10
                ),
-                if(state is UpdateRegistrationCodesLoadingState) Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: const CircularProgressIndicator(color: Colors.blue,),
+                if(state is UpdateRegistrationCodesLoadingState) const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: CircularProgressIndicator(color: Colors.blue,),
                 ),
               ],
             ),
           )
               :
-          Center(
+          const Center(
             child: CircularProgressIndicator(color: Colors.blue,),
           ),
         );

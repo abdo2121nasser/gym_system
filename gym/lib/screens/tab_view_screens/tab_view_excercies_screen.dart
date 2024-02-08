@@ -12,7 +12,9 @@ class TabViewExcerciestScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ExcerciesCubit, ExcerciesState>(
+    return BlocProvider.value(
+      value: ExcerciesCubit.get(context)..getAllExcercies(),
+      child: BlocConsumer<ExcerciesCubit, ExcerciesState>(
       listener: (context, state) {
       },
       builder: (context, state) {
@@ -99,6 +101,7 @@ class TabViewExcerciestScreen extends StatelessWidget {
           ),
         );
       },
-    );
+    ),
+);
   }
 }

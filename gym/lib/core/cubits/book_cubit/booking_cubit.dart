@@ -9,7 +9,7 @@ import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/core/models/firebase_models/booking_data_data_model.dart';
 import 'package:gym/core/models/firebase_models/class_customer_model.dart';
 import 'package:meta/meta.dart';
-
+import 'package:intl/intl.dart';
 import '../../constants/constants.dart';
 import '../../models/firebase_models/user_data_model.dart';
 part 'booking_state.dart';
@@ -28,22 +28,59 @@ class BookingCubit extends Cubit<BookingState> {
     List<BookingHistory> recentClasses=[];
   List<ClassCustomerModel> customerAttendList=[];
   List<ClassCustomerModel> customerAbsentList=[];
-  changeSelectedDay(DateTime day)
-  {
-     selectedDay=day;
+List <bool> classInProgress=[];
+  List <bool> classInDeleting=[];
+  bool addClassProgress=false;
+  initialFunction({required context})
+  async {
+   await Future.delayed(const Duration(seconds: 0))
+        .then((value) async {
+          print('initial function ------------------');
+     await ProfileCubit.get(context).creditDateValidation(context: context);
+      emit(InitialFunctionCreditValidationState());
+
+    })
+        .then((value) async {
+          await getRecentBookedClasses(context: context);
+          emit(InitialFunctionRecentBookedClassState());
+    })
+        .catchError((error){
+      print(error);
+    });
+  }
+  changeSelectedDay(DateTime day,context)
+  async {
+    if(classInProgress.contains(true)!=false)
+    {
+      await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is booking Process is in Process now '),duration: Duration(seconds: 1),));
+      return;
+    }
+    else if(classInDeleting.contains(true)!=false)
+    {
+      await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is deleting Process is in Process now '),duration: Duration(seconds: 1),));
+      return;
+    }
+
+    selectedDay=day;
      emit(ChangeSelectedDayState());
-     getAllAvailableClass();
+    await getAllAvailableClass();
   }
    showDialogBox({required context})
    {
     return showDialog(context: context,
       builder: (context) {
       return AlertDialogBoxBlock(
-        addFunction: (){
-          addGymClasses(context: context);
-          Navigator.of(context).pop();
+        addFunction: () async {
+          addClassProgress=true;
+          await Future.delayed(const Duration(seconds: 0)).then((value) async {
+            await addGymClasses(context: context);
 
-
+          }).then((value) async {
+            await getAllAvailableClass();
+          }).then((value) {
+            Navigator.of(context).pop();
+            addClassProgress=false;
+          });
         },
         cancelFunction: (){
           Navigator.of(context).pop();
@@ -83,7 +120,7 @@ class BookingCubit extends Cubit<BookingState> {
     await  data.add({
       'class name':className.text,
       'couch name':classCouchName.text,
-      'max customer number': classMaxCustomer.text==''? int.parse(classMaxCustomer.text):30,
+      'max customer number': classMaxCustomer.text==''?30: int.parse(classMaxCustomer.text),
       'start date':Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day)),
       'start time hour':classStartTime!.hour,
       'start time minute':classStartTime!.minute,
@@ -95,8 +132,8 @@ class BookingCubit extends Cubit<BookingState> {
           classStartTime=TimeOfDay.now();
           classMaxCustomer.text='30';
           emit(AddClassGymSuccessState());
-          getAllAvailableClass();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('success add Class')));
+          //getAllAvailableClass();
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('success add Class')));
 
     })
         .catchError((error){
@@ -106,20 +143,38 @@ class BookingCubit extends Cubit<BookingState> {
   }
 
     getAllAvailableClass()
-    async {
+     async {
+
+       // await FirebaseFirestore.instance
+       //     .collection(Constants.kGymClassesCollectionId)
+       //     .where('start date',isEqualTo: Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day,0,0)))
+       //     .orderBy('start time hour').get().then((v){
+       //       v.docs.forEach((element) {
+       //         print(element.data()['start date']);
+       //         print(Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day,)));
+       //       });
+       // });
+
+
+
+
       emit(GetAllAvailableClassLoadingState());
       availableClassesModel.clear();
      if(availableClassesModel.isEmpty)
        {
          await FirebaseFirestore.instance
              .collection(Constants.kGymClassesCollectionId)
-             .where('start date',isEqualTo: Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day)))
+             .where('start date',isEqualTo: Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day,)))
              .orderBy('start time hour').get()
-             .then((value) async {
+             .then((value)  {
+               print(value.docs.length);
                availableClassesModel.clear();
+               classInProgress.clear();
+               classInDeleting.clear();
                value.docs.forEach((element) {
                  availableClassesModel.add(BookingClassesModel.fromJson(snapshot: element.data(),documentId:element.id ));
-
+                  classInProgress.add(false);
+                  classInDeleting.add(false);
                });
            emit(GetAllAvailableClassSuccessState());
          })
@@ -130,49 +185,98 @@ class BookingCubit extends Cubit<BookingState> {
        }
     }
 
-    deleteGymClass({required String docId,required context})
+    deleteGymClass({required String docId,required context,required int index})
     async {
+    if(classInDeleting[index]==true)
+      {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is deleting Process is in Process now '),duration: Duration(seconds: 1),));
+      return;
+      }
+    classInDeleting[index]=true;
       emit(DeleteGymClassLoadingState());
-   await returnAllCredits(classDocIc: docId,context: context);
-   await  FirebaseFirestore.instance
-          .collection(Constants.kGymClassesCollectionId)
-          .doc(docId).delete()
-          .then((value) async {
-        emit(DeleteGymClassSuccessState());
-       await getAllAvailableClass();
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('success delete class')));
-      }).catchError((error){
-        emit(DeleteGymClassErrorState());
+
+      await Future.delayed(const Duration(seconds: 0)).then((value) async {
+        await returnAllCredits(classDocIc: docId,context: context);
+      }).then((value) async {
+       await cancelAllClassesHistory(classDocIc:docId,context: context);
+      }).then((value) async {
+        await  FirebaseFirestore.instance
+            .collection(Constants.kGymClassesCollectionId)
+            .doc(docId).delete()
+            .then((value2) async {
+          emit(DeleteGymClassSuccessState());
+          //await getAllAvailableClass();
+          //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('success delete class')));
+          classInDeleting[index]=false;
+        }).catchError((error){
+          emit(DeleteGymClassErrorState());
+          print(error);
+        });
+      });
+
+    }
+    cancelAllClassesHistory({required context,required String classDocIc})
+    async {
+      emit(CancelAllClassesHistoryLoadingState());
+      await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(classDocIc).collection(Constants.kGymClassCustomerCollectionId)
+          .get()
+          .then((value) {
+        value.docs.forEach((element) async {
+          //each user
+          await FirebaseFirestore.instance.collection(
+              Constants.kUsersCollectionId).doc(
+              element.data()['customer doc id']).get()
+              .then((userValue) async {
+            await  Future.delayed(const Duration(seconds: 0)).then((value) async {
+              await cancelClassGymFromHistory(mainDocId: userValue.id,
+                  subDocId:  await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(userValue.id).collection(Constants.kGymClassesHistoryBookingCollectionId).where('document id',isEqualTo: classDocIc).get().then((value3) {return value3.docs[0].id;}).catchError((error){print(error);}),
+                  context: context);
+              }).then((value) async {
+           //    await  getHistroyGymClasses(context: context);
+              //todo if some thing happen un comment it
+
+              });
+          }).catchError((error){
+            print(error);
+          });
+        });
+        emit(CancelAllClassesHistorySucssedState());
+      })
+          .catchError((error){
+        emit(CancelAllClassesHistoryErrorState());
         print(error);
       });
+
     }
     returnAllCredits({required String classDocIc,required context})
     async {
        emit(ReturnAllCreditsLoadingState());
-        await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(classDocIc).collection(Constants.kGymClassCustomerCollectionId)
-            .get()
-            .then((value) {
-              value.docs.forEach((element) async {
-               await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).where('email',isEqualTo: element.data()['email']).get()
-                    .then((value) async {
-                      if(await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(value.docs[0].id)
-                          .collection(Constants.kGymClassesHistoryBookingCollectionId).get().then((value)
-                      {return value.docs.isNotEmpty;}
-                      )
-                      )
-               {
-                await  ProfileCubit.get(context).incrementCredit(currentCredit1: value.docs[0].data()['current credit']+1,docId:  value.docs[0].id);
-                await cancelClassGymFromHistory(mainDocId: value.docs[0].id,
-                    subDocId:  await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(value.docs[0].id).collection(Constants.kGymClassesHistoryBookingCollectionId).where('document id',isEqualTo: classDocIc).get().then((value) {return value.docs[0].id;}).catchError((error){print(error);}),
-                    context: context);
-                getHistroyGymClasses(context: context);
-              }
-
-                })
-                    .catchError((error){
-                      print(error);
-                });
-              });
+       await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(classDocIc).collection(Constants.kGymClassCustomerCollectionId)
+           .get()
+           .then((value) {
+             value.docs.forEach((element) async {
+               //each user
+               await FirebaseFirestore.instance.collection(
+                   Constants.kUsersCollectionId).doc(
+                   element.data()['customer doc id']).get()
+                   .then((userValue) async {
+                       await  ProfileCubit.get(context).incrementCredit(currentCredit1: userValue.data()!['current credit']+1,docId:  userValue.id);
+                 // await  Future.delayed(const Duration(seconds: 0)).then((value) async {
+                   //
+                   //   await cancelClassGymFromHistory(mainDocId: userValue.id,
+                   //       subDocId:  await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId).doc(userValue.id).collection(Constants.kGymClassesHistoryBookingCollectionId).where('document id',isEqualTo: classDocIc).get().then((value3) {return value3.docs[0].id;}).catchError((error){print(error);}),
+                   //       context: context);
+                   //   }).then((value) async {
+                   //
+                   //
+                   //
+                   // }).then((value) async {
+                   //    await  getHistroyGymClasses(context: context);
+                   //   });
+               }).catchError((error){
+                 print(error);
+               });
+             });
               emit(ReturnAllCreditsSuccessState());
         })
             .catchError((error){
@@ -194,7 +298,6 @@ class BookingCubit extends Cubit<BookingState> {
       if(ProfileCubit.get(context).userDataModel==null) {
         await  ProfileCubit.get(context).reciveAllUserData();
       }
-
       await FirebaseFirestore.instance.collection(Constants.kUsersCollectionId)
           .doc(await ProfileCubit.get(context).userDataModel!.docId).collection(Constants.kGymClassesHistoryBookingCollectionId)
           .get()
@@ -210,6 +313,22 @@ class BookingCubit extends Cubit<BookingState> {
             emit(GetHistoryClassesHistoryErrorState());
             print(error);
       });
+      historyClasses.sort((b, a) {
+        if (a.startDate.toDate().year != b.startDate.toDate().year) {
+          return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
+        }
+        if (a.startDate.toDate().month != b.startDate.toDate().month) {
+          return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
+        }
+        if (a.startDate.toDate().day != b.startDate.toDate().day) {
+          return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
+        }
+        if (a.startTimeHour != b.startTimeHour) {
+          return a.startTimeHour.compareTo(b.startTimeHour);
+        }
+        return a.startTimeMinute.compareTo(b.startTimeMinute);
+      });
+
     }
 
 
@@ -231,8 +350,9 @@ class BookingCubit extends Cubit<BookingState> {
       })
           .then((value) {
             emit(AddGymClassToHistorySuccessState());
-            ProfileCubit.get(context).reciveAllUserData();
-            getHistroyGymClasses(context: context);
+            //ProfileCubit.get(context).reciveAllUserData();
+          //  getHistroyGymClasses(context: context);
+        //todo has been editedd
       })
           .catchError((error){
               emit(AddGymClassToHistoryErrorState());
@@ -240,7 +360,6 @@ class BookingCubit extends Cubit<BookingState> {
       });
 
     }
-
     cancelClassGymFromHistory({required String mainDocId, required String subDocId,required context,})
   async {
     emit(CancelGymClassFromHistoryLoadingState());
@@ -248,8 +367,9 @@ class BookingCubit extends Cubit<BookingState> {
         .collection(Constants.kUsersCollectionId).doc(mainDocId).collection(Constants.kGymClassesHistoryBookingCollectionId).doc(subDocId)
         .delete()
         .then((value) async {
+
      await ProfileCubit.get(context).reciveAllUserData();
-     getHistroyGymClasses(context: context);
+   await getHistroyGymClasses(context: context);
      emit(CancelGymClassFromHistorySuccessState());
     }).catchError((error){
       emit(CancelGymClassFromHistoryErrorState());
@@ -267,39 +387,68 @@ class BookingCubit extends Cubit<BookingState> {
 
    decrementCustomerNumber({required String docId,required int customerNumber})
    async {
-    emit(DecrementCustomerNumberLoadingState());
-    await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(docId)
-        .update({
-      'customer number':customerNumber-1
-    })
-        .then((value) {
-          emit(DecrementCustomerNumberSuccessState());
-    })
-        .catchError((error){
-          emit(DecrementCustomerNumberErrorState());
-           print(error);
-    });
+     await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(docId).collection(Constants.kGymClassCustomerCollectionId).get()
+         .then((value) async {
+       emit(DecrementCustomerNumberLoadingState());
+       await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(docId)
+           .update({
+         'customer number':/*customerNumber-1*/value.docs.length
+       })
+           .then((value) {
+         emit(DecrementCustomerNumberSuccessState());
+       })
+           .catchError((error){
+         emit(DecrementCustomerNumberErrorState());
+         print(error);
+       });
+     }).catchError((error){
+       print(error);
+     });
+
+
    }
   incrementCustomerNumber({required String docId,required int customerNumber})
   async {
+
+  await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(docId).collection(Constants.kGymClassCustomerCollectionId).get()
+        .then((value) async {
+
     emit(IncrementCustomerNumberLoadingState());
+    print(value.docs.length);
     await FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId).doc(docId)
         .update({
-      'customer number':customerNumber+1
+      'customer number':/*customerNumber+1*/value.docs.length
     })
         .then((value) {
-          emit(IncrementCustomerNumberSuccessState());
+      emit(IncrementCustomerNumberSuccessState());
 
     })
         .catchError((error){
-          emit(IncrementCustomerNumberErrorState());
+      emit(IncrementCustomerNumberErrorState());
       print(error);
     });
+  }).catchError((error){
+    print(error);
+  });
+    
+
   }
 
-  bookClass({required String classDocId,required UserDataModel object,required context,required String historyDocId,required BookingClassesModel historyObject})
+  bookClass({required int index,required String classDocId,required UserDataModel object,required context,required String historyDocId,required BookingClassesModel historyObject})
   async {
-   await ProfileCubit.get(context).reciveAllUserData();
+    if(classInProgress.contains(true)!=false)
+      {
+        await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is another booking Process is in Process now '),duration: Duration(seconds: 1),));
+        return;
+      }
+    if(classInDeleting.contains(true)!=false)
+    {
+      await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is deleting Process is in Process now '),duration: Duration(seconds: 1),));
+      return;
+    }
+
+
+    classInProgress[index]=true;
     emit(BookClassLoadingState());
     CollectionReference data = FirebaseFirestore.instance.collection(Constants.kGymClassesCollectionId);
   await data.doc(classDocId).collection(Constants.kGymClassCustomerCollectionId)
@@ -314,24 +463,41 @@ class BookingCubit extends Cubit<BookingState> {
     })
         .then((value) async {
       await addGymClassToHistory(userDocId:historyDocId , object:historyObject,context: context);
-      await ProfileCubit.get(context).decrementCredit();
+      await ProfileCubit.get(context).decrementCredit(currentCredit1: ProfileCubit.get(context).userDataModel!.currentCredit!-1,docId: ProfileCubit.get(context).userDataModel!.docId!);
       await incrementCustomerNumber(docId: classDocId, customerNumber: historyObject.customerNumber!);
-      await  getAllAvailableClass();
-      print(availableClassesModel.length);
+     await getHistroyGymClasses(context: context);
+     await ProfileCubit.get(context).reciveAllUserData();
+      classInProgress[index]=false;
       emit(BookClassSuccessState());
-     await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Booked'),duration: Duration(seconds: 1),));
+//      await getAllAvailableClass();
+
+
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Booked'),duration: Duration(seconds: 1),));
     })
         .catchError((error){
-      emit(BookClassErrorState());
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('something went wrong'),duration: Duration(seconds: 1),));
+    emit(BookClassErrorState());
       print(error);
     });
 
   }
 
-  cancelBookedClass({required String mainDocId, required String email,required context
+  cancelBookedClass({required int index,required String mainDocId, required String email,required context
     ,required String historyMainDocId,required String historySubDocId
     ,required int customerNumber,bool isIncrement=true})
   async {
+    if(classInProgress.contains(true)!=false)
+    {
+      await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is booking Process is in Process now '),duration: Duration(seconds: 1),));
+      return;
+    }
+    if(classInDeleting.contains(true)!=false)
+    {
+      await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is deleting Process is in Process now '),duration: Duration(seconds: 1),));
+      return;
+    }
+
+    classInProgress[index]=true;
     emit(CancelBookedClassLoadingState());
     await FirebaseFirestore.instance
         .collection(Constants.kGymClassesCollectionId).doc(mainDocId).collection(Constants.kGymClassCustomerCollectionId)
@@ -341,17 +507,19 @@ class BookingCubit extends Cubit<BookingState> {
     )
         .delete()
         .then((value) async {
-         await cancelClassGymFromHistory(mainDocId: historyMainDocId, subDocId: historySubDocId, context: context);
        if(isIncrement) {
-        await ProfileCubit.get(context).reciveAllUserData();
+      // // await ProfileCubit.get(context).reciveAllUserData();
          await ProfileCubit.get(context).incrementCredit(currentCredit1: ProfileCubit.get(context).userDataModel!.currentCredit!+1,docId: ProfileCubit.get(context).userDataModel!.docId!);
        }
        await decrementCustomerNumber(docId: mainDocId, customerNumber: customerNumber);
-      //await  getAllAvailableClass();
-      await getHistroyGymClasses(context: context);
-      emit(CancelBookedClassSuccessState());
-        await ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('canceled')));
+       await cancelClassGymFromHistory(mainDocId: historyMainDocId, subDocId: historySubDocId, context: context);
+       await getHistroyGymClasses(context: context);
+         emit(CancelBookedClassSuccessState());
+        // await getAllAvailableClass();
+         classInProgress[index]=false;
+         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('canceled')));
     }).catchError((error){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('something went wrong'),duration: Duration(seconds: 1),));
       emit(CancelBookedClassErrorState());
       print(error);
     });
@@ -360,46 +528,40 @@ class BookingCubit extends Cubit<BookingState> {
   getRecentBookedClasses({required context})
   async {
     emit(GetRecentBookedClassesLoadingState());
-   try
-   {
-    await getHistroyGymClasses(context: context);
-    recentClasses.clear();
-     historyClasses.forEach((element) {
-       if(
-            element.startDate.toDate().year.toInt()>= DateTime.now().year.toInt()
-           &&  element.startDate.toDate().month.toInt()>= DateTime.now().month.toInt()
-           &&  element.startDate.toDate().day.toInt()>= DateTime.now().day.toInt())
-       {
-         if (element.startDate.toDate().day.toInt() == DateTime.now().day.toInt()
-             && element.startTimeHour.toInt() > DateTime.now().hour.toInt())
-         {
-           recentClasses.add(element);
-         }
-         else if(element.startDate.toDate().day.toInt() > DateTime.now().day.toInt())
-           {
-             recentClasses.add(element);
-           }
-       }
 
-     });
-    recentClasses.sort((a, b) {
-      if (a.startDate.toDate().year != b.startDate.toDate().year) {
-        return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
-      }
-      if (a.startDate.toDate().month != b.startDate.toDate().month) {
-        return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
-      }
-      if (a.startDate.toDate().day != b.startDate.toDate().day) {
-        return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
-      }
-      return a.startTimeHour.compareTo(b.startTimeHour);
-    });
-     emit(GetRecentBookedClassesSuccessState());
-   }catch(error)
-    {
+    Future.delayed(const Duration(seconds: 0))
+        .then((value) async {
+      await getHistroyGymClasses(context: context);
+    })
+        .then((value) {
+      recentClasses.clear();
+      historyClasses.forEach((element) {
+        if(isTheDateNotPassed(date: element.startDate.toDate(),hour: element.startTimeHour,minute: element.startTimeMinute))
+          {
+            recentClasses.add(element);
+          }
+
+
+      });
+      recentClasses.sort((a, b) {
+        if (a.startDate.toDate().year != b.startDate.toDate().year) {
+          return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
+        }
+        if (a.startDate.toDate().month != b.startDate.toDate().month) {
+          return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
+        }
+        if (a.startDate.toDate().day != b.startDate.toDate().day) {
+          return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
+        }
+        return a.startTimeHour.compareTo(b.startTimeHour);
+      });
+      emit(GetRecentBookedClassesSuccessState());
+    })
+        .catchError((error){
       emit(GetRecentBookedClassesErrorState());
       print(error);
-    }
+      print('--------------------------');
+    });
   }
 
      getMyDailySchedule({required String couchName})
@@ -533,7 +695,23 @@ class BookingCubit extends Cubit<BookingState> {
 
   }
 
-
+  bool isTheDateNotPassed({required int hour,required int minute,required DateTime date})
+   {
+     DateTime customeDate=DateTime(
+       date.year,
+       date.month,
+       date.day,
+       hour,minute
+     );
+       if(customeDate.isAfter(DateTime.now()))
+         {
+           return true;
+         }
+       else
+         {
+           return false;
+         }
+   }
 
 
 

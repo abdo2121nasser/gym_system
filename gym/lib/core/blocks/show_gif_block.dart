@@ -11,7 +11,7 @@ ShowGifBlock({required this.gifUrl,required this.name});
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       width: double.maxFinite,height: 200,
       decoration: BoxDecoration(
         //color: Colors.red,
@@ -33,7 +33,7 @@ ShowGifBlock({required this.gifUrl,required this.name});
                      if (loadingProgress != null) {
                        return child;
                      } else {
-                       return Center(
+                       return const Center(
                          child: CircularProgressIndicator(color: Colors.blue,),
                        );
                      }

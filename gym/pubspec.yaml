@@ -50,7 +50,6 @@ dependencies:
   table_calendar: ^3.0.9
   calendar_picker: ^0.0.1-alpha
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

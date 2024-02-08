@@ -29,7 +29,7 @@ ShowListOfBodyPartsScreen({required this.bodyPartName,});
               backgroundColor: Colors.blue,
               leading: IconButton(onPressed: (){
                 Navigator.pop(context);
-              },icon: Icon(Icons.arrow_back,color: Colors.white,size: 30,),),
+              },icon: const Icon(Icons.arrow_back,color: Colors.white,size: 30,),),
             ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -51,7 +51,7 @@ ShowListOfBodyPartsScreen({required this.bodyPartName,});
                       const SizedBox(height: 10,),
                       itemCount: exCubit.bodyPartModel!.excercies!.length!),
                 ):
-                Center(child: const CircularProgressIndicator(color: Colors.blue,)),
+                const Center(child: CircularProgressIndicator(color: Colors.blue,)),
               ],
             )
         );

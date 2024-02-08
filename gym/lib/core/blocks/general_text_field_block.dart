@@ -33,7 +33,7 @@ controller: controller,
         ],
       decoration:  InputDecoration(
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
             borderSide:
             BorderSide(width: 1.7,color: Colors.grey.shade600)),
         border:const  OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),

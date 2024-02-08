@@ -21,8 +21,8 @@ class ExcerciesScreen extends StatelessWidget {
                    color: Colors.white,
             child: Column(
               children: [
-                TabBarBlock(),
-                SizedBox(height: 10,),
+                const TabBarBlock(),
+                const SizedBox(height: 10,),
                        navCubit.currentTabViewScreen
               ],
             ),

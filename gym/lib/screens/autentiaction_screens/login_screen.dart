@@ -4,6 +4,8 @@ import 'package:gym/core/cubits/authentication_cubit/authentication_cubit.dart';
 import 'package:gym/core/cubits/authentication_cubit/authentication_cubit.dart';
 import 'package:gym/core/cubits/book_cubit/booking_cubit.dart';
 import 'package:gym/core/cubits/navigation_cubit/navigation_cubit.dart';
+import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
+import 'package:gym/core/cubits/profile_cubit/profile_cubit.dart';
 import 'package:gym/screens/autentiaction_screens/forget_password.dart';
 import 'package:gym/screens/navigation_Screens/navigation_screen.dart';
 import '../../core/blocks/auth_switch_block.dart';
@@ -16,11 +18,21 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<ProfileCubit, ProfileState>(
+  listener: (context, state) {
+    if(state is ReciveAllUserDataSuccessState) {
+      Future.delayed(const Duration(seconds: 1)).then((value) {
+        Navigator.pushReplacement(context,  MaterialPageRoute(builder: (context) => const NavigationScreen(),));
+      });
+    }
+  },
+  builder: (context, state) {
     return BlocConsumer<AuthenticationCubit, AuthenticationState>(
       listener: (context, state) {
       },
       builder: (context, state) {
     var authData=AuthenticationCubit.get(context);
+    var profCubit=ProfileCubit.get(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
@@ -75,8 +87,8 @@ class LoginScreen extends StatelessWidget {
                               : Text('${massage}'),
                       ));
                       if(await massage=='true') {
-                        NavigationCubit.get(context).changeScreenIndex(screenIndex1: 0, context: context);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const NavigationScreen(),));
+                        NavigationCubit.get(context).changeScreenIndex(screenIndex1: 0, context: context,loginState: true);
+                        profCubit.reciveAllUserData();
                       }
                     }, width: double.maxFinite,
                     hight: 45, textColor: Colors.white, backgroundColor: Colors.blue),
@@ -90,5 +102,7 @@ class LoginScreen extends StatelessWidget {
     );
       },
     );
+  },
+);
   }
 }

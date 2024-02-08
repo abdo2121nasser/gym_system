@@ -104,9 +104,9 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10,),
             const ProfileBlock(),
-            if(state is UpdateProfileLoadingState) Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: const CircularProgressIndicator(color: Colors.blue,),
+            if(state is UpdateProfileLoadingState) const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: CircularProgressIndicator(color: Colors.blue,),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
