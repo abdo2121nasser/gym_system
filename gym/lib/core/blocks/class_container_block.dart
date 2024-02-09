@@ -30,7 +30,7 @@ class ClassContainerBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return  Container(
          width: double.maxFinite,
-      height: 191,
+      height: isBookScreen==true?198:160,
       decoration: BoxDecoration(
         color: backgroundColor,
         boxShadow:  const [
@@ -83,6 +83,15 @@ class ClassContainerBlock extends StatelessWidget {
             const SizedBox(height: 5,),
             Row(
               children: [
+                Icon(Icons.place,color: Constants.kBlueColor,),
+                const SizedBox(width: 10,),
+                Text(bookingModel.classRoom!,
+                  style: TextStyle(fontSize: 16,color: textColor),),
+              ],
+            ),
+            const SizedBox(height: 5,),
+            Row(
+              children: [
                 Icon(Icons.person,color: Constants.kBlueColor,),
                 const SizedBox(width: 10,),
                 Text(bookingModel.couchName!,
@@ -94,7 +103,7 @@ class ClassContainerBlock extends StatelessWidget {
             : Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${bookingModel.maxCustomerNumber!.toInt()-bookingModel.customerNumber!} places left',
+                Text('${bookingModel.maxCustomerNumber!.toInt()-bookingModel.customerNumber!}/${bookingModel.maxCustomerNumber!.toInt()} places left',
                   style: const TextStyle(fontSize: 16,color: Colors.red),),
                classInProgress?
                const CircularProgressIndicator(color: Colors.blue,):

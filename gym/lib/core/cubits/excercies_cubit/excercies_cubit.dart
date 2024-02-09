@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gym/core/constants/constants.dart';
 import 'package:gym/core/models/api_models/excercies_model.dart';
@@ -55,24 +56,43 @@ class ExcerciesCubit extends Cubit<ExcerciesState> {
             emit(GetAllExcerciesErrorState());
       });
     }
-    searchGeneralExcercies()
+    searchGeneralExcercies({required context})
     async {
-      if(searchController.text.isEmpty) return;
-      emit(SearchGeneralyExcerciesLoadingState());
-      await   DioHelper.getData(
-          url: 'exercises/name/${searchController.text}',
-        query: {
-            'limit':1500
-        }
-      )
-          .then((value) async {
+      // if(searchController.text.isEmpty) return;
+      // emit(SearchGeneralyExcerciesLoadingState());
+      // await   DioHelper.getData(
+      //     url: 'exercises/name/${searchController.text}',
+      //   query: {
+      //       'limit':1500
+      //   }
+      // )
+      //     .then((value) async {
+      //   excerciesModel=await ExcerciesModel.fromJson({'excercies':value.data});
+      //   emit(SearchGeneralyExcerciesSuccessState());
+      // })
+      //     .catchError((error){
+      //   print(error);
+      //   emit(SearchGeneralyExcerciesErrorState());
+      // });
+      try{
+        if(searchController.text.isEmpty) return;
+        emit(SearchGeneralyExcerciesLoadingState());
+      var value=  await   DioHelper.getData(
+            url: 'exercises/name/${searchController.text}',
+            query: {
+              'limit':1500
+            }
+        );
         excerciesModel=await ExcerciesModel.fromJson({'excercies':value.data});
         emit(SearchGeneralyExcerciesSuccessState());
-      })
-          .catchError((error){
+      }catch(error)
+      {
         print(error);
         emit(SearchGeneralyExcerciesErrorState());
-      });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('something went wrong please push cancel')));
+      }
+
+
     }
   getBodyPartExcercies({required String bodyPartName})
   async {

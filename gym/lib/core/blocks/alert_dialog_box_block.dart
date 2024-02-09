@@ -9,11 +9,12 @@ import 'general_text_field_block.dart';
 
 
 class AlertDialogBoxBlock extends StatelessWidget {
-  TextEditingController className,classMaxCustomerNumber;
+  TextEditingController className,classMaxCustomerNumber,classRoom;
   TimeOfDay? classStartTime;
   TextEditingController classCouchName;
   VoidCallback updatetime,addFunction,cancelFunction;
   AlertDialogBoxBlock({
+    required this.classRoom,
     required this.classMaxCustomerNumber,
     required this.updatetime,required this.addFunction,required this.cancelFunction,
     required this.className,required this.classStartTime,
@@ -67,6 +68,8 @@ class AlertDialogBoxBlock extends StatelessWidget {
 
             const SizedBox(height: 10,),
             GeneralTextFieldBlock(hint:'Class Couch', controller: classCouchName),
+            const SizedBox(height: 10,),
+            GeneralTextFieldBlock(hint:'Class Room', controller: classRoom),
             const SizedBox(height: 10,),
             GeneralTextFieldBlock(hint:'max customer number', controller:classMaxCustomerNumber,onlyInteger: true, ),
             const SizedBox(height: 20,),

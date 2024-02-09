@@ -19,6 +19,7 @@ class BookingCubit extends Cubit<BookingState> {
   static BookingCubit get(context)=>BlocProvider.of(context);
   DateTime selectedDay=DateTime.now();
   TextEditingController className=TextEditingController();
+  TextEditingController classRoom=TextEditingController();
      TimeOfDay? classStartTime=TimeOfDay.now();
   TextEditingController classCouchName=TextEditingController();
   TextEditingController classMaxCustomer=TextEditingController(text: '30');
@@ -86,6 +87,7 @@ List <bool> classInProgress=[];
           Navigator.of(context).pop();
           classStartTime=TimeOfDay.now();
           className.clear();
+          classRoom.clear();
           classMaxCustomer.text='30';
           classCouchName.clear();
         },
@@ -95,7 +97,9 @@ List <bool> classInProgress=[];
         classMaxCustomerNumber: classMaxCustomer,
         className: className,
         classCouchName: classCouchName,
-        classStartTime: classStartTime,);
+        classStartTime: classStartTime,
+      classRoom: classRoom,
+      );
     },);
    }
    updateClassStartTime({required context})
@@ -124,11 +128,13 @@ List <bool> classInProgress=[];
       'start date':Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day)),
       'start time hour':classStartTime!.hour,
       'start time minute':classStartTime!.minute,
-      'customer number':0
+      'customer number':0,
+      'class Room':classRoom.text
     })
         .then((value) {
           className.clear();
           classCouchName.clear();
+          classRoom.clear();
           classStartTime=TimeOfDay.now();
           classMaxCustomer.text='30';
           emit(AddClassGymSuccessState());
@@ -144,20 +150,6 @@ List <bool> classInProgress=[];
 
     getAllAvailableClass()
      async {
-
-       // await FirebaseFirestore.instance
-       //     .collection(Constants.kGymClassesCollectionId)
-       //     .where('start date',isEqualTo: Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day,0,0)))
-       //     .orderBy('start time hour').get().then((v){
-       //       v.docs.forEach((element) {
-       //         print(element.data()['start date']);
-       //         print(Timestamp.fromDate(DateTime(selectedDay.year,selectedDay.month,selectedDay.day,)));
-       //       });
-       // });
-
-
-
-
       emit(GetAllAvailableClassLoadingState());
       availableClassesModel.clear();
      if(availableClassesModel.isEmpty)
@@ -187,6 +179,13 @@ List <bool> classInProgress=[];
 
     deleteGymClass({required String docId,required context,required int index})
     async {
+
+      if(classInProgress[index]==true)
+      {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is booking Process is in Process now '),duration: Duration(seconds: 1),));
+        return;
+      }
+
     if(classInDeleting[index]==true)
       {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('there is deleting Process is in Process now '),duration: Duration(seconds: 1),));
@@ -308,26 +307,34 @@ List <bool> classInProgress=[];
             });
 
             emit(GetHistoryClassesHistorySuccessState());
+        historyClasses.sort((b, a) {
+          DateTime customDateTimeA=DateTime(a.startDate.toDate().year,a.startDate.toDate().month,a.startDate.toDate().day,a.startTimeHour,a.startTimeMinute);
+          DateTime customDateTimeB=DateTime(b.startDate.toDate().year,b.startDate.toDate().month,b.startDate.toDate().day,b.startTimeHour,b.startTimeMinute);
+
+          return customDateTimeA.compareTo(customDateTimeB);
+
+        },);
       })
           .catchError((error){
             emit(GetHistoryClassesHistoryErrorState());
             print(error);
       });
-      historyClasses.sort((b, a) {
-        if (a.startDate.toDate().year != b.startDate.toDate().year) {
-          return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
-        }
-        if (a.startDate.toDate().month != b.startDate.toDate().month) {
-          return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
-        }
-        if (a.startDate.toDate().day != b.startDate.toDate().day) {
-          return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
-        }
-        if (a.startTimeHour != b.startTimeHour) {
-          return a.startTimeHour.compareTo(b.startTimeHour);
-        }
-        return a.startTimeMinute.compareTo(b.startTimeMinute);
-      });
+      // historyClasses.sort((b, a) {
+      //   if (a.startDate.toDate().year != b.startDate.toDate().year) {
+      //     return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
+      //   }
+      //   if (a.startDate.toDate().month != b.startDate.toDate().month) {
+      //     return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
+      //   }
+      //   if (a.startDate.toDate().day != b.startDate.toDate().day) {
+      //     return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
+      //   }
+      //   if (a.startTimeHour != b.startTimeHour) {
+      //     return a.startTimeHour.compareTo(b.startTimeHour);
+      //   }
+      //   return a.startTimeMinute.compareTo(b.startTimeMinute);
+      // });
+
 
     }
 
@@ -346,6 +353,7 @@ List <bool> classInProgress=[];
         'start time hour':object.startTimeHour,
         'start time minute':object.startTimeMinute,
         'document id':object.docId,
+        'class Room':object.classRoom,
         'attended':true
       })
           .then((value) {
@@ -543,18 +551,25 @@ List <bool> classInProgress=[];
 
 
       });
+      // recentClasses.sort((a, b) {
+      //   if (a.startDate.toDate().year != b.startDate.toDate().year) {
+      //     return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
+      //   }
+      //   if (a.startDate.toDate().month != b.startDate.toDate().month) {
+      //     return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
+      //   }
+      //   if (a.startDate.toDate().day != b.startDate.toDate().day) {
+      //     return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
+      //   }
+      //   return a.startTimeHour.compareTo(b.startTimeHour);
+      // });
       recentClasses.sort((a, b) {
-        if (a.startDate.toDate().year != b.startDate.toDate().year) {
-          return a.startDate.toDate().year.compareTo(b.startDate.toDate().year);
-        }
-        if (a.startDate.toDate().month != b.startDate.toDate().month) {
-          return a.startDate.toDate().month.compareTo(b.startDate.toDate().month);
-        }
-        if (a.startDate.toDate().day != b.startDate.toDate().day) {
-          return a.startDate.toDate().day.compareTo(b.startDate.toDate().day);
-        }
-        return a.startTimeHour.compareTo(b.startTimeHour);
-      });
+        DateTime customDateTimeA=DateTime(a.startDate.toDate().year,a.startDate.toDate().month,a.startDate.toDate().day,a.startTimeHour,a.startTimeMinute);
+        DateTime customDateTimeB=DateTime(b.startDate.toDate().year,b.startDate.toDate().month,b.startDate.toDate().day,b.startTimeHour,b.startTimeMinute);
+
+        return customDateTimeA.compareTo(customDateTimeB);
+
+      },);
       emit(GetRecentBookedClassesSuccessState());
     })
         .catchError((error){
@@ -576,6 +591,13 @@ List <bool> classInProgress=[];
              value.docs.forEach((element) {
                   myDailySchedulModel.add(BookingClassesModel.fromJson(snapshot: element.data(), documentId: element.id));
              });
+             // myDailySchedulModel.sort((b, a) {
+             //   DateTime customDateTimeA=DateTime(a.startDate!.toDate().year,a.startDate!.toDate().month,a.startDate!.toDate().day,a.startTimeHour,a.startTimeMinute);
+             //   DateTime customDateTimeB=DateTime(b.startDate!.toDate().year,b.startDate!.toDate().month,b.startDate!.toDate().day,b.startTimeHour,b.startTimeMinute);
+             //
+             //   return customDateTimeA.compareTo(customDateTimeB);
+             //
+             // },);
          emit(GetMyDailyScheduleSuccessState());
        })
            .catchError((error){

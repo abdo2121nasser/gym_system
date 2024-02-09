@@ -26,21 +26,24 @@ ShowGifBlock({required this.gifUrl,required this.name});
            width: double.maxFinite,height: 140,
            decoration: BoxDecoration(
              borderRadius: BorderRadius.circular(20),
-             image: DecorationImage(
-               image: Image.network(
-                 gifUrl,
-                   loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                     if (loadingProgress != null) {
-                       return child;
-                     } else {
-                       return const Center(
-                         child: CircularProgressIndicator(color: Colors.blue,),
-                       );
-                     }
-                   }
-               ).image
-             )
            ),
+            child:  Image.network(
+                gifUrl,
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress != null) {
+                    // While the image is loading, show a CircularProgressIndicator
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      ),
+                    );
+                  } else {
+                    // Once the image is loaded, show the image
+                    return child;
+                  }
+                },
+              fit: BoxFit.contain,
+            )
           ),
           Expanded(
             child: Center(

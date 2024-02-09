@@ -124,7 +124,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   FloatingActionButton(
                     backgroundColor: Colors.indigo.shade400,
                     onPressed: () {
-                      if(bCubit.selectedDay.isAfter(DateTime.now())) {
+                      if(bCubit.selectedDay.isAfter(DateTime.now())||true) {
                         bCubit.showDialogBox(context: context);
                         // todo remove the or in condition
                       } else

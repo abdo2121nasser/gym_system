@@ -40,21 +40,33 @@ class DetailExcerciesScreen extends StatelessWidget {
                 width: double.maxFinite,height: 180,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                        image: Image.network(
-                            excercie.gifUrl!,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return const Center(
-                                  child: CircularProgressIndicator(color: Colors.blue,),
-                                );
-                              }
-                            }
-                        ).image
-                    )
+                    // image: DecorationImage(
+                    //     image: Image.network(
+                    //         excercie.gifUrl!,
+                    //         loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                    //           if (loadingProgress == null) {
+                    //             return child;
+                    //           } else {
+                    //             return const Center(
+                    //               child: CircularProgressIndicator(color: Colors.blue,),
+                    //             );
+                    //           }
+                    //         }
+                    //     ).image
+                    // )
                 ),
+                child: Image.network(
+                          excercie.gifUrl!,
+                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return const Center(
+                                child: CircularProgressIndicator(color: Colors.blue,),
+                              );
+                            }
+                          }
+                      ),
               ),
              Padding(
                padding: const EdgeInsets.symmetric(horizontal: 10),

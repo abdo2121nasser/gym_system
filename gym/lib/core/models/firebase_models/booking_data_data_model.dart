@@ -4,6 +4,7 @@ import 'package:gym/core/models/firebase_models/user_data_model.dart';
 class BookingClassesModel {
   final String? className;
   final String? couchName;
+  final String? classRoom;
   final String? docId;
   final int? startTimeHour;
   final int? startTimeMinute;
@@ -16,6 +17,7 @@ class BookingClassesModel {
         required this.maxCustomerNumber,
         required this.customerNumber,
         required this.couchName,
+        required this.classRoom,
         required this.startTimeHour,
         required this.startTimeMinute,
         required this.startDate,
@@ -30,7 +32,8 @@ class BookingClassesModel {
         couchName: snapshot['couch name'],
         startDate: snapshot['start date'],
         startTimeHour: snapshot['start time hour'],
-        startTimeMinute: snapshot['start time minute']
+        startTimeMinute: snapshot['start time minute'],
+      classRoom: snapshot['class Room']
     );
   }
   factory BookingClassesModel.fromUserDataModel({
@@ -44,7 +47,8 @@ class BookingClassesModel {
         couchName: bookingHistory.couchName,
         startDate: bookingHistory.startDate,
         startTimeHour: bookingHistory.startTimeHour,
-        startTimeMinute: bookingHistory.startTimeMinute
+        startTimeMinute: bookingHistory.startTimeMinute,
+      classRoom: bookingHistory.classRoom,
     );
   }
 

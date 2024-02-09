@@ -34,7 +34,7 @@ class TabViewExcerciestScreen extends StatelessWidget {
                               child: SearchBarBlock(
                                   controller: exCubit.searchController, function: () async {
                                 exCubit.excerciesModel=null;
-                                exCubit.searchGeneralExcercies();
+                               await exCubit.searchGeneralExcercies(context: context);
                                 if(exCubit.excerciesModel==null)
                                 {
                                   await Future.delayed(const Duration(seconds: 2));
@@ -45,11 +45,16 @@ class TabViewExcerciestScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: InkWell(
-                              onTap: (){
+                              onTap: () async {
                                 exCubit.searchController.clear();
-                                exCubit.getAllExcercies();
+                                exCubit.excerciesModel=null;
+                                await exCubit.getAllExcercies();
+                                if(exCubit.excerciesModel==null)
+                                {
+                                  await Future.delayed(const Duration(seconds: 2));
+                                }
                               },
-                              child: Text('Cancel',
+                              child: const Text('Cancel',
                                 style: TextStyle(color: Colors.blue,fontSize: 20,decoration: TextDecoration.underline),),
                             ),
                           )
@@ -61,7 +66,7 @@ class TabViewExcerciestScreen extends StatelessWidget {
                 child: SearchBarBlock(
                     controller: exCubit.searchController, function: () async {
                       exCubit.excerciesModel=null;
-                      exCubit.searchGeneralExcercies();
+                      exCubit.searchGeneralExcercies(context: context);
                       if(exCubit.excerciesModel==null)
                         {
                          await Future.delayed(const Duration(seconds: 2));
@@ -91,7 +96,7 @@ class TabViewExcerciestScreen extends StatelessWidget {
                    },
                    separatorBuilder: (context, index) =>
                    const SizedBox(height: 10,),
-                   itemCount: exCubit.excerciesModel!.excercies!.length!),
+                   itemCount: exCubit.excerciesModel!.excercies!.length),
              ):
              const Padding(
                padding: EdgeInsets.only(top: 20),

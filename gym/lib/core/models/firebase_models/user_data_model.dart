@@ -64,6 +64,7 @@ class UserDataModel {
 class BookingHistory {
   final String currentSubDocId;
   final String className;
+  final String classRoom;
   final String couchName;
   final String subDocId;
   final int startTimeHour;
@@ -78,6 +79,7 @@ class BookingHistory {
         required this.currentSubDocId,
         required this.subDocId,
         required this.couchName,
+        required this.classRoom,
       required this.startTimeHour,
       required this.startTimeMinute,
         required this.maxCustomerNumber,
@@ -92,6 +94,7 @@ class BookingHistory {
       currentSubDocId: cSubDocId,
       subDocId: snapshot['document id'],
         className: snapshot['class name'],
+      classRoom: snapshot['class Room'],
       couchName: snapshot['couch name'],
       startDate: snapshot['start date'],
       startTimeHour: snapshot['start time hour'],
